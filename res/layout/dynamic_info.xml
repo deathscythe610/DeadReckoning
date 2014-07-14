@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dynamicInfoScrollLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+
+        
+
+        <TextView
+            android:id="@+id/accelerometerXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Accelerometer X Sensor: " />
+        
+        <TextView
+            android:id="@+id/accelerometerXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/accelerometerXSensorLabel"
+            android:layout_toRightOf="@id/accelerometerXSensorLabel"
+            android:layout_marginLeft="25dp"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/accelerometerYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/accelerometerXSensorValue"
+            android:layout_below="@id/accelerometerXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/accelerometerYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/accelerometerYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/accelerometerYSensorValue"
+            android:text="Accelerometer Y Sensor: " />
+
+        <TextView
+            android:id="@+id/accelerometerZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/accelerometerYSensorValue"
+            android:layout_below="@id/accelerometerYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/accelerometerZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/accelerometerZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/accelerometerZSensorValue"
+            android:text="Accelerometer Z Sensor: " />
+
+        <TextView
+            android:id="@+id/gravityXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/accelerometerZSensorValue"
+            android:layout_below="@id/accelerometerZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/gravityXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/gravityXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/gravityXSensorValue"
+            android:text="gravity X Sensor: " />
+
+        <TextView
+            android:id="@+id/gravityYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/gravityXSensorValue"
+            android:layout_below="@id/gravityXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/gravityYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/gravityYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/gravityYSensorValue"
+            android:text="gravity Y Sensor: " />
+
+        <TextView
+            android:id="@+id/gravityZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/gravityYSensorValue"
+            android:layout_below="@id/gravityYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/gravityZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/gravityZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/gravityZSensorValue"
+            android:text="gravity Z Sensor: " />
+        
+        
+        
+        
+        <TextView
+            android:id="@+id/gyroscopeXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/gravityZSensorValue"
+            android:layout_below="@id/gravityZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/gyroscopeXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/gyroscopeXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/gyroscopeXSensorValue"
+            android:text="Gyroscope X Sensor: " />
+
+        <TextView
+            android:id="@+id/gyroscopeYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/gyroscopeXSensorValue"
+            android:layout_below="@id/gyroscopeXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/gyroscopeYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/gyroscopeYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/gyroscopeYSensorValue"
+            android:text="Gyroscope Y Sensor: " />
+
+        <TextView
+            android:id="@+id/gyroscopeZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/gyroscopeYSensorValue"
+            android:layout_below="@id/gyroscopeYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/gyroscopeZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/gyroscopeZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/gyroscopeZSensorValue"
+            android:text="Gyroscope Z Sensor: " />
+        
+        
+        
+        <TextView
+            android:id="@+id/linearAccelerationXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/gyroscopeZSensorValue"
+            android:layout_below="@id/gyroscopeZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/linearAccelerationXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/linearAccelerationXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/linearAccelerationXSensorValue"
+            android:text="Linear Acceleration X Sensor: " />
+
+        <TextView
+            android:id="@+id/linearAccelerationYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/linearAccelerationXSensorValue"
+            android:layout_below="@id/linearAccelerationXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/linearAccelerationYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/linearAccelerationYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/linearAccelerationYSensorValue"
+            android:text="Linear Acceleration Y Sensor: " />
+
+        <TextView
+            android:id="@+id/linearAccelerationZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/linearAccelerationYSensorValue"
+            android:layout_below="@id/linearAccelerationYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/linearAccelerationZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/linearAccelerationZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/linearAccelerationZSensorValue"
+            android:text="Linear Acceleration Z Sensor: " />
+        
+        
+        
+        <TextView
+            android:id="@+id/magneticFieldXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/linearAccelerationZSensorValue"
+            android:layout_below="@id/linearAccelerationZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/magneticFieldXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/magneticFieldXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/magneticFieldXSensorValue"
+            android:text="Magnetic Field X Sensor: " />
+
+        <TextView
+            android:id="@+id/magneticFieldYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/magneticFieldXSensorValue"
+            android:layout_below="@id/magneticFieldXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/magneticFieldYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/magneticFieldYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/magneticFieldYSensorValue"
+            android:text="Magnetic Field Y Sensor: " />
+
+        <TextView
+            android:id="@+id/magneticFieldZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/magneticFieldYSensorValue"
+            android:layout_below="@id/magneticFieldYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/magneticFieldZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/magneticFieldZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/magneticFieldZSensorValue"
+            android:text="Magnetic Field Z Sensor: " />
+        
+        <TextView
+            android:id="@+id/rotationVectorXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/magneticFieldZSensorValue"
+            android:layout_below="@id/magneticFieldZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/rotationVectorXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/rotationVectorXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/rotationVectorXSensorValue"
+            android:text="Rotation Vector X Sensor: " />
+
+        <TextView
+            android:id="@+id/rotationVectorYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/rotationVectorXSensorValue"
+            android:layout_below="@id/rotationVectorXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/rotationVectorYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/rotationVectorYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/rotationVectorYSensorValue"
+            android:text="Rotation Vector Y Sensor: " />
+
+        <TextView
+            android:id="@+id/rotationVectorZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/rotationVectorYSensorValue"
+            android:layout_below="@id/rotationVectorYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/rotationVectorZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/rotationVectorZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/rotationVectorZSensorValue"
+            android:text="Rotation Vector Z Sensor: " />
+        
+        
+        <TextView
+            android:id="@+id/orientationXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/rotationVectorZSensorValue"
+            android:layout_below="@id/rotationVectorZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/orientationXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/orientationXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/orientationXSensorValue"
+            android:text="orientation X Sensor: " />
+
+        <TextView
+            android:id="@+id/orientationYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/orientationXSensorValue"
+            android:layout_below="@id/orientationXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/orientationYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/orientationYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/orientationYSensorValue"
+            android:text="orientation Y Sensor: " />
+
+        <TextView
+            android:id="@+id/orientationZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/orientationYSensorValue"
+            android:layout_below="@id/orientationYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/orientationZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/orientationZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/orientationZSensorValue"
+            android:text="orientation Z Sensor: " />
+        
+        <TextView
+            android:id="@+id/worldAccelerationXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/orientationZSensorValue"
+            android:layout_below="@id/orientationZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/worldAccelerationXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/worldAccelerationXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/worldAccelerationXSensorValue"
+            android:text="worldAcceleration X Sensor: " />
+
+        <TextView
+            android:id="@+id/worldAccelerationYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/worldAccelerationXSensorValue"
+            android:layout_below="@id/worldAccelerationXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/worldAccelerationYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/worldAccelerationYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/worldAccelerationYSensorValue"
+            android:text="worldAcceleration Y Sensor: " />
+
+        <TextView
+            android:id="@+id/worldAccelerationZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/worldAccelerationYSensorValue"
+            android:layout_below="@id/worldAccelerationYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/worldAccelerationZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/worldAccelerationZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/worldAccelerationZSensorValue"
+            android:text="worldAcceleration Z Sensor: " />
+        
+        <TextView
+            android:id="@+id/displacementXSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/worldAccelerationZSensorValue"
+            android:layout_below="@id/worldAccelerationZSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/displacementXSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/displacementXSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/displacementXSensorValue"
+            android:text="displacement X Sensor: " />
+
+        <TextView
+            android:id="@+id/displacementYSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/displacementXSensorValue"
+            android:layout_below="@id/displacementXSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/displacementYSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/displacementYSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/displacementYSensorValue"
+            android:text="displacement Y Sensor: " />
+
+        <TextView
+            android:id="@+id/displacementZSensorValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/displacementYSensorValue"
+            android:layout_below="@id/displacementYSensorValue"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/displacementZSensorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/displacementZSensorValue"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/displacementZSensorValue"
+            android:text="displacement Z Sensor: " />
+        
+        <TextView
+        android:id="@+id/logInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Small Text"
+        android:layout_alignLeft="@id/displacementZSensorValue"
+            android:layout_below="@id/displacementZSensorValue"
+        />
+    </RelativeLayout>
+
+    
+
+</ScrollView>

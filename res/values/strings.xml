@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dead Reckoning</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Dead Reckoning</string>
+    <string name="google_map_test_label">Google Map Test</string>
+    <string name="transparency">Transparency</string>
+    <string name="done">Done</string>
+    <string name="calibrationSuccess">Calibration successful!</string>
+    <string name="calibrationCancelled">Calibration cancelled!</string>
+    <string name="drCalibrationTitle">DR Calibration</string>
+    <string name="drCalibrationMsg">DR calibration in progress. Please make 10 to 20 steps.</string>
+    <string name="gyroscopeCalibrationTitle">Gyroscope Calibration</string>
+    <string name="gyroscopeCalibrationMsg">Please put the device on a table and make sure it is not moved until calibration completes.</string>
+    <string name="gyroscopeCalibrationProgress">Calculating gyroscope offset. Please wait</string>
+    <string name="orientationCalibrationTitle">Orientation offset Calibration</string>
+    <string name="orientationCalibrationMsg">Please hold the device in the desired calibration direction until calibration completes.</string>
+    <string name="orientationCalibrationProgress">Orientation offset calibration in progress. Please wait</string>
+    <string name="mapStartPointSpinnerLabel">Start point: </string>
+    <string name="mapStartPointResetSuccess">Start point set successfully.</string>
+    <string name="mapStartPointResetFailed">Start point assignment failed!</string>
+    <string name="mapFix">Map Fixing</string>
+</resources>

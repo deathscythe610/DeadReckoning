@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+
+
+    <CheckBox
+        android:id="@+id/mapFix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mapFix"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true" />
+    
+    <TextView
+        android:id="@+id/mapStartPointSpinnerLabel"
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/mapFix"
+        android:layout_toRightOf="@id/mapFix"
+        android:text="@string/mapStartPointSpinnerLabel" />
+    
+
+    <Spinner
+        android:id="@+id/mapStartPointSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/mapFix"
+        android:layout_toRightOf="@id/mapStartPointSpinnerLabel" />
+    
+ <LinearLayout
+     android:id="@+id/seekbarmenu"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_below="@id/mapStartPointSpinnerLabel"
+     android:orientation="horizontal"
+     android:layout_marginTop="15dip">
+
+     <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/transparency"
+         android:layout_gravity="center_vertical" />
+     <SeekBar
+      android:id="@+id/transparencySeekBar"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"/>
+ </LinearLayout>"
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@id/seekbarmenu"
+      android:layout_marginTop="15dip" >
+
+    <fragment
+      android:id="@+id/map"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="10dip"
+      class="com.google.android.gms.maps.SupportMapFragment"/>
+  </LinearLayout>
+    
+</RelativeLayout>

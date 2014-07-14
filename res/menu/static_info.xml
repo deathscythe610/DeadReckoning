@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/startDataLogMain" android:orderInCategory="50" android:title="Start data log 'Main'"></item>
+    <item android:id="@+id/startDataLogMapPath" android:orderInCategory="51" android:title="Start data log 'Map path'"></item>
+    <item android:id="@+id/drCalibration"  android:orderInCategory="60" android:title="Begin DR Calibration"></item>
+    <item android:id="@+id/gyroscopeCalibration"  android:orderInCategory="61" android:title="Begin Gyroscope Calibration"></item>
+    <item android:id="@+id/menu_settings" android:title="@string/menu_settings" android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/change_psql_settings" android:title="Change database connection" android:orderInCategory="200" android:showAsAction="never" />
+    <item android:id="@+id/exit" android:orderInCategory="999" android:title="Exit"></item> 
+</menu>

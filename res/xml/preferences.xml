@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory 
+        android:title="Main"
+        android:key="main">        
+        <ListPreference 
+            android:key="startup_screen"
+            android:title="Startup screen"
+            android:summary="Define which screen to show after startup"
+            android:defaultValue="0" 
+            android:entries="@array/startup_screen"
+            android:entryValues="@array/startup_screen_values"
+        />
+        <ListPreference 
+            android:key="sensor_refresh_speed"
+            android:title="Sensor refresh speed"
+            android:summary="Define the refresh speed of sensor values"
+            android:defaultValue="3" 
+            android:entries="@array/refresh_speed"
+            android:entryValues="@array/refresh_speed_values"
+        />
+        <ListPreference 
+            android:key="dr_orientation_source"
+            android:title="DR orientation source"
+            android:summary="Define the source of orientation for DR algorithm"
+            android:defaultValue="2" 
+            android:entries="@array/dr_orientation_source"
+            android:entryValues="@array/dr_orientation_source_values"
+        />
+        <EditTextPreference 
+            android:key="fuse_coefficient"
+            android:inputType="numberDecimal"
+            android:title="Orientation fuse coefficient"
+            android:summary="Define the orientation fuse coefficient (importance of gyro)"
+            android:defaultValue="0.95"
+            android:dialogTitle="Define the orientation fuse coefficient (importance of gyro)"
+            />
+        <EditTextPreference 
+            android:key="ui_refresh_speed"
+            android:title="UI refresh speed"
+            android:summary="Define the refresh speed of user interface"
+            android:defaultValue="500"
+            android:dialogTitle="Enter the refresh rate of UI (ms)"
+            />
+        
+        <CheckBoxPreference
+          android:title="Global logging"
+          android:defaultValue="false"
+          android:summary="Turns logging on or off globally"
+          android:key="globalLogging" />
+        
+        <CheckBoxPreference
+          android:title="Map full rotation"
+          android:defaultValue="true"
+          android:summary="Toggle map full rotation. Turn off on older devices."
+          android:key="mapFullRotation" />
+        
+        <CheckBoxPreference
+          android:title="Wifi location fixing"
+          android:defaultValue="true"
+          android:summary="Use wifi to fix location."
+          android:key="wifiLocationFixing" />
+        
+        <CheckBoxPreference
+            android:title="Map location fixing"
+            android:defaultValue="true"
+            android:summary="USe map database to fix location. Need internet connection"
+            android:key="mapLocationFixing" />
+        
+        <EditTextPreference
+	        android:inputType="numberDecimal|numberSigned"
+	        android:key="drThresholdMax"
+	        android:title="Maximum threshold for DR"
+	        android:summary="" />
+        
+        <EditTextPreference
+	        android:inputType="numberDecimal|numberSigned"
+	        android:key="drThresholdMin"
+	        android:title="Minimum threshold for DR"
+	        android:summary="" />
+        
+        <EditTextPreference
+	        android:inputType="numberDecimal"
+	        android:key="drK"
+	        android:title="K parameter for DR step length estimation"
+	        android:summary="" />
+        <EditTextPreference
+	        android:inputType="numberDecimal"
+	        android:key="drOrientationOffset"
+	        android:title="Offset in radians to get local coordinates"
+	        android:summary="" />
+        
+        <EditTextPreference
+	        android:inputType="numberDecimal"
+	        android:key="gyroscopeXOffset"
+	        android:title="Offset in radians to compensate drift"
+	        android:summary="" />
+        
+        <EditTextPreference
+	        android:inputType="numberDecimal"
+	        android:key="gyroscopeYOffset"
+	        android:title="Offset in radians to compensate drift"
+	        android:summary="" />
+        
+        <EditTextPreference
+	        android:inputType="numberDecimal"
+	        android:key="gyroscopeZOffset"
+	        android:title="Offset in radians to compensate drift"
+	        android:summary="" />
+	        
+        
+    </PreferenceCategory>    
+</PreferenceScreen>
