@@ -18,19 +18,26 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+
 public class MainActivity extends FragmentActivity{
 	private static final String TAG = "TM_MainActivity";
 	private static MainActivity instance=null;
+	private MapFragment mapFragment;
+	private DRFragment drFragment;
+	private SensorFragment sensorFragment;
 	
 	private DynamicInfoUpdater diu;
-	private Map<Integer,Info> infoClassMap = new HashMap<Integer,Info>();
+	private Map<Integer,Fragment> fragmentClassMap = new HashMap<Integer,Fragment>();
 	protected SensorInfo sensorInfo;
 	protected DeadReckoning deadReckoning;
 	protected MapInfo mapInfo;
@@ -46,6 +53,7 @@ public class MainActivity extends FragmentActivity{
 	    return aRunnable;
 
 	}
+	ViewPager mPager;
 	private MyPagerAdapter pagerAdapter;
 	private Timer deadReckoningTimer;
 	private Timer mapFixingTimer;
@@ -83,22 +91,43 @@ public class MainActivity extends FragmentActivity{
 	}
 		
     @Override
-    public void onCreate(Bundle savedInstanceState) {this.getSupportFragmentManager();
+    public void onCreate(Bundle savedInstanceState) {
+    	this.getSupportFragmentManager();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         MainActivity.instance=this;
-        pagerAdapter = new MyPagerAdapter(this);
+        ViewPager vpPager = (ViewPager)findViewById(R.id.mypager);
+        pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        vpPager.setAdapter(pagerAdapter);
+        mapFragment = (MapFragment)pagerAdapter.getItem(0);
+        drFragment = (DRFragment)pagerAdapter.getItem(1);
+        sensorFragment = (SensorFragment)pagerAdapter.getItem(2);
         
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 		int startupScreen = Integer.valueOf(sharedPrefs.getString("startup_screen","0"));
-		pagerAdapter.setCurrentItem(startupScreen);
-		this.mapInfo = new MapInfo();
-        this.sensorInfo = new SensorInfo();
-        this.deadReckoning = new DeadReckoning();
-        this.infoClassMap.put(2, this.sensorInfo);
-        this.infoClassMap.put(1,this.deadReckoning);
-        this.infoClassMap.put(0,this.mapInfo);
-        this.diu = new DynamicInfoUpdater(this.infoClassMap);
+		vpPager.setCurrentItem(startupScreen);
+		
+		vpPager.setOnPageChangeListener(new OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int index) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+		fragmentClassMap.put(0, this.mapFragment);
+		fragmentClassMap.put(1, this.drFragment);
+		fragmentClassMap.put(2, this.sensorFragment);
+        this.diu = new DynamicInfoUpdater(fragmentClassMap);
         
         //init default SQL configuration
         SQLSettingsActivity.initSQLConfig();
@@ -107,7 +136,10 @@ public class MainActivity extends FragmentActivity{
                 + Environment.getExternalStorageDirectory())));
     }
     
-    @Override
+
+		
+
+	@Override
     public void onDestroy() {
     	Log.d(TAG,"onDestroy()");
     	super.onDestroy();
@@ -143,7 +175,7 @@ public class MainActivity extends FragmentActivity{
 				showDrCalibrationDialog();
 				return true;
 			case R.id.gyroscopeCalibration:
-				this.sensorInfo.triggerGyroscopeCalibration();
+				this.sensorFragment.triggerGyroscopeCalibration();
 				return true;
 			case R.id.change_psql_settings:
 				startActivity(new Intent(this, SQLSettingsActivity.class));
@@ -238,7 +270,7 @@ public class MainActivity extends FragmentActivity{
     
     class deadReckoningTask extends TimerTask {
 		public void run() {
-			deadReckoning.trigger_zhanhy(sensorInfo.getWorldAccelerationZ(),sensorInfo.getWorldAccelerationX(), sensorInfo.orientationFusion.getOrientation());
+			drFragment.trigger_zhanhy(sensorInfo.getWorldAccelerationZ(),sensorInfo.getWorldAccelerationX(), sensorInfo.orientationFusion.getOrientation());
 		}
 	}
     

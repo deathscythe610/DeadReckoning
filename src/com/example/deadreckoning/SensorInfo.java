@@ -56,7 +56,6 @@ public class SensorInfo extends Info  implements SensorEventListener{
 	
 	class logOrientationTask extends TimerTask {
 		public void run() {
-			
 		}
 	}
 		
@@ -79,45 +78,9 @@ public class SensorInfo extends Info  implements SensorEventListener{
     					;
     	DataLogManager.addLine("datalog",line);
     }
-//	}
+
         
-	@Override
-	void createUiMap(){
-		ScrollView layout = (ScrollView)MainActivity.getInstance().findViewForPositionInPager(2);
-		if(layout==null) {
-			Log.d(TAG,"layout null");
-			return;
-		}
-		uiMap.put("accelerometerXSensorValue", (TextView) layout.findViewById(R.id.accelerometerXSensorValue));
-		uiMap.put("accelerometerYSensorValue", (TextView) layout.findViewById(R.id.accelerometerYSensorValue));
-		uiMap.put("accelerometerZSensorValue", (TextView) layout.findViewById(R.id.accelerometerZSensorValue));
-		uiMap.put("gravityXSensorValue", (TextView) layout.findViewById(R.id.gravityXSensorValue));
-		uiMap.put("gravityYSensorValue", (TextView) layout.findViewById(R.id.gravityYSensorValue));
-		uiMap.put("gravityZSensorValue", (TextView) layout.findViewById(R.id.gravityZSensorValue));
-		uiMap.put("gyroscopeXSensorValue", (TextView) layout.findViewById(R.id.gyroscopeXSensorValue));
-		uiMap.put("gyroscopeYSensorValue", (TextView) layout.findViewById(R.id.gyroscopeYSensorValue));
-		uiMap.put("gyroscopeZSensorValue", (TextView) layout.findViewById(R.id.gyroscopeZSensorValue));
-		uiMap.put("linearAccelerationXSensorValue", (TextView) layout.findViewById(R.id.linearAccelerationXSensorValue));
-		uiMap.put("linearAccelerationYSensorValue", (TextView) layout.findViewById(R.id.linearAccelerationYSensorValue));
-		uiMap.put("linearAccelerationZSensorValue", (TextView) layout.findViewById(R.id.linearAccelerationZSensorValue));
-		uiMap.put("magneticFieldXSensorValue", (TextView) layout.findViewById(R.id.magneticFieldXSensorValue));
-		uiMap.put("magneticFieldYSensorValue", (TextView) layout.findViewById(R.id.magneticFieldYSensorValue));
-		uiMap.put("magneticFieldZSensorValue", (TextView) layout.findViewById(R.id.magneticFieldZSensorValue));
-		uiMap.put("rotationVectorXSensorValue", (TextView) layout.findViewById(R.id.rotationVectorXSensorValue));
-		uiMap.put("rotationVectorYSensorValue", (TextView) layout.findViewById(R.id.rotationVectorYSensorValue));
-		uiMap.put("rotationVectorZSensorValue", (TextView) layout.findViewById(R.id.rotationVectorZSensorValue));
-		uiMap.put("orientationXSensorValue", (TextView) layout.findViewById(R.id.orientationXSensorValue));
-		uiMap.put("orientationYSensorValue", (TextView) layout.findViewById(R.id.orientationYSensorValue));
-		uiMap.put("orientationZSensorValue", (TextView) layout.findViewById(R.id.orientationZSensorValue));
-		uiMap.put("worldAccelerationXSensorValue", (TextView) layout.findViewById(R.id.worldAccelerationXSensorValue));
-		uiMap.put("worldAccelerationYSensorValue", (TextView) layout.findViewById(R.id.worldAccelerationYSensorValue));
-		uiMap.put("worldAccelerationZSensorValue", (TextView) layout.findViewById(R.id.worldAccelerationZSensorValue));
-		uiMap.put("displacementXSensorValue", (TextView) layout.findViewById(R.id.displacementXSensorValue));
-		uiMap.put("displacementYSensorValue", (TextView) layout.findViewById(R.id.displacementYSensorValue));
-		uiMap.put("displacementZSensorValue", (TextView) layout.findViewById(R.id.displacementZSensorValue));
-		uiMap.put("logInfo", (TextView) layout.findViewById(R.id.logInfo));
-	}
-	
+
 	@Override
 	void init() {
 		registerSensors();

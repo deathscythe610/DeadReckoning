@@ -2,64 +2,59 @@ package com.example.deadreckoning;
 
 import java.util.HashMap;
 
+import android.os.Bundle;
 import android.content.Context;
 import android.os.Parcelable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
-public class MyPagerAdapter extends PagerAdapter {
+public class MyPagerAdapter extends FragmentPagerAdapter {
 		private static final String TAG = "TM_PageAdapter";
-		private HashMap<Integer, Object> views = new HashMap<Integer, Object>();
-		private Integer[] pages = {R.layout.map,R.layout.dead_reckoning,R.layout.dynamic_info};
-		private ExtendedViewPager myPager;
+		private static int numItems = 3;
 		
-		public MyPagerAdapter(MainActivity activity) {
-			myPager = (ExtendedViewPager) activity.findViewById(R.id.mypager);
-	        myPager.setAdapter(this);
+		public MyPagerAdapter(FragmentManager fragmentManager){
+			super(fragmentManager);
 		}
 	
         public int getCount() {
-            return 3;
+            return numItems;
         }
         
-        public void setCurrentItem(int pos){
-        	this.myPager.setCurrentItem(pos);
-        }
-
- 
-        public Object instantiateItem(View collection, int position) {
-            LayoutInflater inflater = (LayoutInflater) collection.getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
- 
-            View view = inflater.inflate(pages[position], null);
-            ((ViewPager) collection).addView(view, 0);
-            Log.d("TM_Pager",position+"");
-            views.put(position, view);
-            switch (position) {
-            case 1:
-                break;
-            case 2:
-                break;
-	        }
-            MainActivity.getInstance().initUI(position);
-            
-            return view;
-        }
-        
-        protected View findViewForPosition(int position) {
-        	return (View) views.get(position);
-    	}
-
- 
         @Override
-        public void destroyItem(View arg0, int position, Object arg2) {
-            ((ViewPager) arg0).removeView((View) arg2);
-            views.remove(position);
+		public Fragment getItem(int position) {
+        	switch(position){
+        		case 0:
+        			return MapFragment.newInstance(0, "Map Information");
+        		case 1:
+        			return DRFragment.newInstance(1, "DR Information");
+        		case 2: 
+        			return SensorFragment.newInstance(2, "Sensor Information");
+        		default: 
+        			return null;
+        	}
+		}
+        
+        @Override
+		public CharSequence getPageTitle(int position) {
+			switch(position){
+				case 0:
+					return "Map Information";
+				case 1:
+					return "DR Information";
+				case 2: 
+					return "Sensor Information";
+				default:
+					return null;
+			}
         }
- 
+        
+         
         @Override
         public boolean isViewFromObject(View arg0, Object arg1) {
             return arg0 == ((View) arg1);
@@ -71,8 +66,7 @@ public class MyPagerAdapter extends PagerAdapter {
         	return null;
         }
  
-		public void setMapFix(boolean fix) {
-			this.myPager.setPagingEnabled(fix);
-		}
+
+		
         
 }

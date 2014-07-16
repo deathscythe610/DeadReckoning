@@ -12,16 +12,19 @@ import java.util.Map.Entry;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
+import android.support.v4.app.Fragment;
 
 public class DynamicInfoUpdater {
 	private static final String TAG = "TM_DynamicInfoUpdater";
 	
 	private Handler diuHandler=null;
 	private int uiUpdateRate;
+	private Map<Integer,Fragment> fragmentClassMap = new HashMap<Integer,Fragment>();
 	private Map<Integer,Info> infoClassMap = new HashMap<Integer,Info>();
 	
-	public DynamicInfoUpdater(Map<Integer,Info> info) {
+	public DynamicInfoUpdater(Map<Integer,Fragment> fragment, Map<Integer,Info> info) {
 		this.infoClassMap=info;
+		this.fragmentClassMap=fragment;
 		this.init();
 	}
 	
@@ -43,10 +46,10 @@ public class DynamicInfoUpdater {
 	}
 	
 	protected void update() {
-    	Iterator<Entry<Integer, Info>> iter = this.infoClassMap.entrySet().iterator();
+    	Iterator<Entry<Integer, Fragment>> iter = this.fragmentClassMap.entrySet().iterator();
     	while (iter.hasNext()) {
-    		Entry<Integer, Info> pair = iter.next();
-        	Info tempClass = pair.getValue();
+    		Entry<Integer, Fragment> pair = iter.next();
+    		Fragment tempClass = pair.getValue();
         	tempClass.update();
     		Iterator<Entry<String, TextView>> it = tempClass.uiMap.entrySet().iterator();
             while (it.hasNext()) {
