@@ -114,6 +114,7 @@ int id buyButton 0x7f07000a
 int id buy_now 0x7f07000f
 int id buy_with_google 0x7f07000e
 int id calibrationDone 0x7f070018
+int id cameraMove 0x7f07005b
 int id change_psql_settings 0x7f07006b
 int id classic 0x7f070011
 int id deadReckoningScrollLayout 0x7f070019
@@ -133,6 +134,7 @@ int id edit_database_name 0x7f070062
 int id edit_password 0x7f070064
 int id edit_username 0x7f070063
 int id exit 0x7f07006c
+int id googlemap 0x7f070060
 int id gravityXSensorLabel 0x7f070029
 int id gravityXSensorValue 0x7f070028
 int id gravityYSensorLabel 0x7f07002b
@@ -163,8 +165,6 @@ int id magneticFieldYSensorLabel 0x7f07003d
 int id magneticFieldYSensorValue 0x7f07003c
 int id magneticFieldZSensorLabel 0x7f07003f
 int id magneticFieldZSensorValue 0x7f07003e
-int id map 0x7f070060
-int id mapFix 0x7f07005b
 int id mapStartPointSpinner 0x7f07005d
 int id mapStartPointSpinnerLabel 0x7f07005c
 int id match_parent 0x7f07000c
@@ -227,6 +227,7 @@ int string auth_client_requested_by_msg 0x7f050005
 int string auth_client_using_bad_version_title 0x7f050000
 int string calibrationCancelled 0x7f050027
 int string calibrationSuccess 0x7f050026
+int string cameraMove 0x7f050033
 int string common_google_play_services_enable_button 0x7f050011
 int string common_google_play_services_enable_text 0x7f050010
 int string common_google_play_services_enable_title 0x7f05000f
@@ -259,7 +260,6 @@ int string google_map_test_label 0x7f050023
 int string gyroscopeCalibrationMsg 0x7f05002b
 int string gyroscopeCalibrationProgress 0x7f05002c
 int string gyroscopeCalibrationTitle 0x7f05002a
-int string mapFix 0x7f050033
 int string mapStartPointResetFailed 0x7f050032
 int string mapStartPointResetSuccess 0x7f050031
 int string mapStartPointSpinnerLabel 0x7f050030

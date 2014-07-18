@@ -17,28 +17,26 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
-import android.widget.ScrollView;
-import android.widget.TextView;
+
 
 public class SensorInfo extends Info  implements SensorEventListener{
 	private static final String TAG = "TM_SensorInfo";
 	protected int sensorDelay = SensorManager.SENSOR_DELAY_NORMAL;
 	protected SensorManager sensorManager;
-	
-	private float[] magneticFieldValues={0,0,0};
-	private float[] accelerometerValues={0,0,0};
-	private float[] linearAccelerometerValues={0,0,0};
-	private double displacementX=0.0;
-	private double displacementY=0.0;
-	private double displacementZ=0.0;
-	private double worldAccelerationX=0.0;
-	private double worldAccelerationY=0.0;
-	private double worldAccelerationZ=0.0;
-	
-	protected OrientationFusion orientationFusion;
 	private Timer logTimer;
-	private float[] gyroscopeValues={0,0,0};
+	
+	//define public variables to display in sensor fragment
+	public float[] magneticFieldValues={0,0,0};
+	public float[] accelerometerValues={0,0,0};
+	public float[] linearAccelerometerValues={0,0,0};
+	public double displacementX=0.0;
+	public double displacementY=0.0;
+	public double displacementZ=0.0;
+	public double worldAccelerationX=0.0;
+	public double worldAccelerationY=0.0;
+	public double worldAccelerationZ=0.0;
+	public OrientationFusion orientationFusion;
+	public float[] gyroscopeValues={0,0,0};
 	
 	
 	public SensorInfo(){
@@ -89,25 +87,12 @@ public class SensorInfo extends Info  implements SensorEventListener{
 				"3x gyroscope raw | 3x acceleration | 9x rotation matrix | 3x gyroscope original",false);
 		DataLogManager.addLine("datalog", "% orientation source: "+this.orientationFusion.getOrientationSource(),false);
 		DataLogManager.addLine("datalog", "%%% K="+MainActivity.getInstance().deadReckoning.getK()+";",false);
-		DataLogManager.addLine("datalog", "%%% orientationOffset="+MainActivity.getInstance().mapInfo.getCurMap().getOrientationOffsetRadians()+";",false);
+		DataLogManager.addLine("datalog", "%%% orientationOffset="+MainActivity.getInstance().mapFragment.getCurMap().getOrientationOffsetRadians()+";",false);
 		DataLogManager.addLine("datalog", "%%% filterCoefficient="+this.orientationFusion.getFilterCoefficient()+";",false);
 	}
 	
 	@Override
-	void update() {//update is also done asynchronously onSensorChanged()
-		valuesMap.put("logInfo", DataLogManager.getInfo());
-		float oFused = orientationFusion.getFusedZOrientation();
-		float oGyro = orientationFusion.getGyroscopeZOrientation();
-    	float oCompass = orientationFusion.getCompassZOrientation();
-    	valuesMap.put("orientationXSensorValue",Misc.roundToDecimals(oCompass*180/3.14,2) + " / "+ Misc.roundToDecimals(oFused*180/3.14,2) + "/" + Misc.roundToDecimals(oGyro*180/3.14,2) + " / " + Misc.roundToDecimals(this.orientationFusion.getOrientationDiscrete()*180/3.14,2));
-//    	valuesMap.put("orientationYSensorValue",oCompass[1] + " / "+ oFused[1]);
-//		valuesMap.put("orientationZSensorValue",oCompass[2] + " / "+ oFused[2]);
-		valuesMap.put("worldAccelerationXSensorValue", this.worldAccelerationX + "");
-		valuesMap.put("worldAccelerationYSensorValue", this.worldAccelerationY + "");
-		valuesMap.put("worldAccelerationZSensorValue", this.worldAccelerationZ + "");
-		valuesMap.put("displacementXSensorValue",this.displacementX + "");
-		valuesMap.put("displacementYSensorValue",this.displacementY + "");
-		valuesMap.put("displacementZSensorValue",this.displacementZ + "");
+	void update() {
 	}
 	
 
@@ -120,12 +105,10 @@ public class SensorInfo extends Info  implements SensorEventListener{
 			this.worldAccelerationX=result[0][0];
 			this.worldAccelerationY=result[1][0];
 			this.worldAccelerationZ=result[2][0];
-			
 			this.logData();
 		}
 	}
 	
-
 	public void registerSensors() {
     	Sensor accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     	if(accelSensor!=null) {

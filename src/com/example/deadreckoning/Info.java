@@ -6,7 +6,6 @@ package com.example.deadreckoning;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.widget.TextView;
 
 public abstract class Info {
 	Map<String, String> valuesMap = new HashMap<String, String>(); 

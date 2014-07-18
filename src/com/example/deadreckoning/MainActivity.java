@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -32,16 +31,18 @@ import android.widget.Toast;
 public class MainActivity extends FragmentActivity{
 	private static final String TAG = "TM_MainActivity";
 	private static MainActivity instance=null;
-	private MapFragment mapFragment;
-	private DRFragment drFragment;
-	private SensorFragment sensorFragment;
+	protected MapFragment mapFragment;
+	protected DRFragment drFragment;
+	protected SensorFragment sensorFragment;
 	
 	private DynamicInfoUpdater diu;
-	private Map<Integer,Fragment> fragmentClassMap = new HashMap<Integer,Fragment>();
+	private Map<Integer,FragmentControl> fragmentClassMap = new HashMap<Integer,FragmentControl>();
+	private Map<Integer,Info> infoClassMap = new HashMap<Integer,Info>();
+	
 	protected SensorInfo sensorInfo;
 	protected DeadReckoning deadReckoning;
 	protected MapInfo mapInfo;
-
+	
 	public Runnable toastRunnable(final String text){
 
 	    Runnable aRunnable = new Runnable(){
@@ -53,9 +54,10 @@ public class MainActivity extends FragmentActivity{
 	    return aRunnable;
 
 	}
-	ViewPager mPager;
+	protected ViewPager vpPager;
 	private MyPagerAdapter pagerAdapter;
 	private Timer deadReckoningTimer;
+	private Timer mapInfoTimer;
 	private Timer mapFixingTimer;
 	public static Boolean wifiLocationFixing = true;
 	public static Boolean mapLocationFixing = true;
@@ -75,6 +77,8 @@ public class MainActivity extends FragmentActivity{
 	public void init() {
 		deadReckoningTimer = new Timer();
 		deadReckoningTimer.scheduleAtFixedRate(new deadReckoningTask(), 0, 10);
+		mapInfoTimer = new Timer();
+		mapInfoTimer.scheduleAtFixedRate(new deadReckoningTask(), 0, 10);
 		if(MainActivity.mapLocationFixing){
 			mapFixingTimer = new Timer();
 			mapFixingTimer.scheduleAtFixedRate(new FetchMapDataTask(), 0, 3000);
@@ -96,13 +100,16 @@ public class MainActivity extends FragmentActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         MainActivity.instance=this;
-        ViewPager vpPager = (ViewPager)findViewById(R.id.mypager);
+        //Initialize info classes
+        this.mapInfo = new MapInfo();
+        this.sensorInfo = new SensorInfo();
+        this.deadReckoning = new DeadReckoning();
+        //Initialize pager
+        vpPager = (ViewPager)findViewById(R.id.mypager);
+        //Set number off pages to be load
+        vpPager.setOffscreenPageLimit(2);
         pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(pagerAdapter);
-        mapFragment = (MapFragment)pagerAdapter.getItem(0);
-        drFragment = (DRFragment)pagerAdapter.getItem(1);
-        sensorFragment = (SensorFragment)pagerAdapter.getItem(2);
-        
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 		int startupScreen = Integer.valueOf(sharedPrefs.getString("startup_screen","0"));
 		vpPager.setCurrentItem(startupScreen);
@@ -111,7 +118,17 @@ public class MainActivity extends FragmentActivity{
 
             @Override
             public void onPageSelected(int index) {
-                // TODO Auto-generated method stub
+                switch(index){
+                	case 0:
+                		MainActivity.getInstance().mapFragment = (MapFragment)MainActivity.getInstance().findFragmentByPosition(0);
+                		MainActivity.getInstance().fragmentClassMap.put(0, MainActivity.getInstance().mapFragment);
+                	case 1:
+                		MainActivity.getInstance().drFragment = (DRFragment)MainActivity.getInstance().findFragmentByPosition(0);
+                		MainActivity.getInstance().fragmentClassMap.put(1, MainActivity.getInstance().drFragment);
+                	case 2: 
+                		MainActivity.getInstance().sensorFragment = (SensorFragment)MainActivity.getInstance().findFragmentByPosition(0);
+                		MainActivity.getInstance().fragmentClassMap.put(2, MainActivity.getInstance().sensorFragment);
+                }
             }
 
             @Override
@@ -124,10 +141,11 @@ public class MainActivity extends FragmentActivity{
                 // TODO Auto-generated method stub
             }
         });
-		fragmentClassMap.put(0, this.mapFragment);
-		fragmentClassMap.put(1, this.drFragment);
-		fragmentClassMap.put(2, this.sensorFragment);
-        this.diu = new DynamicInfoUpdater(fragmentClassMap);
+	
+		this.infoClassMap.put(0, this.mapInfo);
+		this.infoClassMap.put(1, this.deadReckoning);
+		this.infoClassMap.put(2, this.sensorInfo);
+        this.diu = new DynamicInfoUpdater(fragmentClassMap, infoClassMap);
         
         //init default SQL configuration
         SQLSettingsActivity.initSQLConfig();
@@ -175,7 +193,7 @@ public class MainActivity extends FragmentActivity{
 				showDrCalibrationDialog();
 				return true;
 			case R.id.gyroscopeCalibration:
-				this.sensorFragment.triggerGyroscopeCalibration();
+				this.sensorInfo.triggerGyroscopeCalibration();
 				return true;
 			case R.id.change_psql_settings:
 				startActivity(new Intent(this, SQLSettingsActivity.class));
@@ -218,7 +236,7 @@ public class MainActivity extends FragmentActivity{
 		this.sensorInfo.stopLogging();
 		if(this.deadReckoningTimer!=null)
 			this.deadReckoningTimer.cancel();
-		this.mapInfo.removeallMarker();
+		this.mapFragment.removeallMarker();
 		this.unregisterWifiReceiver();
 		super.onStop();
 	};
@@ -244,10 +262,6 @@ public class MainActivity extends FragmentActivity{
         MainActivity.mapLocationFixing=sharedPrefs.getBoolean("mapLocationFixing", true);
 	}
 	
-	protected void initUI(int pos) {
-		this.diu.initUI(pos);
-	}
-	
     private void showDrCalibrationDialog() {
     	new AlertDialog.Builder(MainActivity.getInstance())
 		.setTitle(R.string.drCalibrationTitle)
@@ -264,13 +278,32 @@ public class MainActivity extends FragmentActivity{
 	    }).show();
     }
     
-    protected View findViewForPositionInPager(int position) {
-    	return this.pagerAdapter.findViewForPosition(position);
+    protected Fragment	findFragmentByPosition(int position) {
+    	int pagerid = this.vpPager.getId();
+    	return getSupportFragmentManager().findFragmentByTag("android:switcher:" + pagerid + ":" + position);
     }
     
+    protected View findViewForPositionInPager(int position) {
+    	switch(position){
+    		case 0: 
+    			return this.mapFragment.getLayout();
+    		case 1:
+    			return this.drFragment.getLayout();
+    		case 2:
+    			return this.sensorFragment.getLayout();
+    		default:
+    			return null;
+    	}
+    }
     class deadReckoningTask extends TimerTask {
 		public void run() {
-			drFragment.trigger_zhanhy(sensorInfo.getWorldAccelerationZ(),sensorInfo.getWorldAccelerationX(), sensorInfo.orientationFusion.getOrientation());
+			deadReckoning.trigger_zhanhy(sensorInfo.getWorldAccelerationZ(),sensorInfo.getWorldAccelerationX(), sensorInfo.orientationFusion.getOrientation());
+		}
+	}
+    
+    class mapInfoTask extends TimerTask {
+		public void run() {
+			mapInfo.update();
 		}
 	}
     
@@ -280,11 +313,6 @@ public class MainActivity extends FragmentActivity{
     	}
     }
     
-    private void setTitleBarMemoryUsage() {
-    	int usedMegs = (int)(Debug.getNativeHeapAllocatedSize() / 1048576L);
-		String usedMegsString = String.format(" - Memory Used: %d MB", usedMegs);
-		getWindow().setTitle(usedMegsString);
-    }
     
     /**
      * unregister broadcastReceiver and catch IllegalArgumentException
@@ -297,10 +325,5 @@ public class MainActivity extends FragmentActivity{
     	} catch(IllegalArgumentException ex) {
     		Log.d(TAG,"caught exception from unregistering");
     	}
-    }
-    protected void setMapFix(boolean fix) {
-    	Log.d(TAG,"mapviewlocked: ");
-    	this.pagerAdapter.setMapFix(fix);
-    	this.mapInfo.setMapFix(fix);
     }
 }

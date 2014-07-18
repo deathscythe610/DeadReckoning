@@ -4,38 +4,37 @@
  * CALIBRATION INITIALIZATION 
  * STEP LENGTH ESTIMATION INITIALIZATION
  * NOTE:
- * -NEED TO DELETE THOMAS VERSION OF TRIGGER() METHOD 
- * -NEED TO ADD IN THE CURLAT AND CURLON TO FINISH CALCULATE NEW LAT AND LON 
- * 
+ * THIS CLASS MAIN METHOD OF CALCULATION IS INVKED BY A SCHEDULED TASK IN THE MAIN ACTIVITY
+ * UPDATE METHOD IS EMPTY, RESULT OF CALCULATION IS DISPLAYED BY DRFRAGMENT CLASS
  */
 package com.example.deadreckoning;
 
-import android.util.Log;
-import android.widget.ScrollView;
-import android.widget.TextView;
+
 
 public class DeadReckoning extends Info implements Runnable {
 	
 	public enum States {
 		IDLE, MAX_DETECT, AFTER_MAX_DETECT, MIDSTEP_DELAY, MIN_DETECT, AFTER_MIN_DETECT;
 	}
-
-	private static final String TAG = "TM_DeadReckoning";
 	private double[] azHistory;
 	private int azHistorySize=2;
-	private int steps = 0;
+	
 	private int maxThresholdPasses=0;
 	private int minThresholdPasses=0;
 	private float lastMaximum = 0;
 	private float lastMinimum = 0;
 	private float K = 0.7f;
-	private float distance=0;
 	private long lastStepTime=0;
 	private States state = States.IDLE;
-	private String stateLog = "";
 	private ParameterEstimation paramEst = null;
 	private boolean calibrationLogging = false;
 	public boolean stateLogging=false;
+	
+	//define public information for drFragment
+	public int steps = 0;
+	public float distance=0;
+	public String stateLog = "";
+	
 	
 	//define separate constant for zhanhy step detection algorithm 
 	private boolean IsGoUp = true;
@@ -52,7 +51,10 @@ public class DeadReckoning extends Info implements Runnable {
 	private int axHistorySize = 4; 
 	private double ax_thresholdMin = -0.5;
 	private double ax_thresholdMax = 0.5;
-	
+
+//*******************************************************************************************************************
+//												FUNCTION INITIALIZATION
+//*******************************************************************************************************************
 	public DeadReckoning() {
 		super();
 		this.azHistory=new double[this.azHistorySize];
@@ -84,22 +86,6 @@ public class DeadReckoning extends Info implements Runnable {
 	}
 
 	@Override
-	void createUiMap() {
-		ScrollView layout = (ScrollView)MainActivity.getInstance().findViewForPositionInPager(1);
-		if(layout==null) {
-			Log.d(TAG,"layout null");
-			return;
-		}
-//			Log.e(TAG,"no layout?");
-		
-//			Log.e(TAG,"layout ok");
-		uiMap.put("steps", (TextView) layout.findViewById(R.id.stepsValue));
-		uiMap.put("statesLog", (TextView) layout.findViewById(R.id.statesLog));
-		uiMap.put("distance", (TextView) layout.findViewById(R.id.distanceValue));
-		
-	}
-
-	@Override
 	void init() {
 		// TODO Auto-generated method stub
 		
@@ -107,11 +93,11 @@ public class DeadReckoning extends Info implements Runnable {
 
 	@Override
 	void update() {
-		valuesMap.put("steps", this.steps+"");
-		valuesMap.put("statesLog", this.stateLog);
-		valuesMap.put("distance", this.distance+"");
 	}
-	
+
+//*******************************************************************************************************************
+//									STEP DETECTION AND STRIDE LENGHT ESTIMTION
+//*******************************************************************************************************************
 	/**
 	 * This is an added function for zhanhy detection algorithm
 	 * This function count the occurrence of half steps (a single max or min peak)
@@ -265,6 +251,9 @@ public class DeadReckoning extends Info implements Runnable {
 		return false; 
 	}
 	
+//*******************************************************************************************************************
+//											SUPPORT FUNCTION
+//*******************************************************************************************************************
 	protected void setParameters(float tMax, float tMin, float K) {
 		this.zhanhy_thresholdMax=tMax;
 		this.zhanhy_thresholdMin=tMin;
@@ -291,10 +280,6 @@ public class DeadReckoning extends Info implements Runnable {
 			sum+=this.azHistory[i];
 		}
 		return sum/this.azHistorySize;
-	}
-	
-	private double azPrev() {
-		return this.azHistory[0];
 	}
 	
 	protected double setKFromHeight(boolean isMale, float height) {

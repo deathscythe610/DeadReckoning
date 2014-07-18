@@ -8,10 +8,10 @@
 
 
     <CheckBox
-        android:id="@+id/mapFix"
+        android:id="@+id/cameraMove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/mapFix"
+        android:text="@string/cameraMove"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true" />
     
@@ -20,8 +20,8 @@
         android:layout_marginLeft="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/mapFix"
-        android:layout_toRightOf="@id/mapFix"
+        android:layout_alignBaseline="@+id/cameraMove"
+        android:layout_toRightOf="@id/cameraMove"
         android:text="@string/mapStartPointSpinnerLabel" />
     
 
@@ -29,7 +29,7 @@
         android:id="@+id/mapStartPointSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/mapFix"
+        android:layout_alignBaseline="@+id/cameraMove"
         android:layout_toRightOf="@id/mapStartPointSpinnerLabel" />
     
  <LinearLayout
@@ -49,7 +49,7 @@
       android:id="@+id/transparencySeekBar"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"/>
- </LinearLayout>"
+ </LinearLayout>
 
   <LinearLayout
       android:layout_width="match_parent"
@@ -58,7 +58,7 @@
       android:layout_marginTop="15dip" >
 
     <fragment
-      android:id="@+id/map"
+      android:id="@+id/googlemap"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_margin="10dip"

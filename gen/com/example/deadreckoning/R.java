@@ -432,6 +432,7 @@ containing a value of this type.
         public static final int buy_now=0x7f07000f;
         public static final int buy_with_google=0x7f07000e;
         public static final int calibrationDone=0x7f070018;
+        public static final int cameraMove=0x7f07005b;
         public static final int change_psql_settings=0x7f07006b;
         public static final int classic=0x7f070011;
         public static final int deadReckoningScrollLayout=0x7f070019;
@@ -451,6 +452,7 @@ containing a value of this type.
         public static final int edit_password=0x7f070064;
         public static final int edit_username=0x7f070063;
         public static final int exit=0x7f07006c;
+        public static final int googlemap=0x7f070060;
         public static final int gravityXSensorLabel=0x7f070029;
         public static final int gravityXSensorValue=0x7f070028;
         public static final int gravityYSensorLabel=0x7f07002b;
@@ -481,8 +483,6 @@ containing a value of this type.
         public static final int magneticFieldYSensorValue=0x7f07003c;
         public static final int magneticFieldZSensorLabel=0x7f07003f;
         public static final int magneticFieldZSensorValue=0x7f07003e;
-        public static final int map=0x7f070060;
-        public static final int mapFix=0x7f07005b;
         public static final int mapStartPointSpinner=0x7f07005d;
         public static final int mapStartPointSpinnerLabel=0x7f07005c;
         public static final int match_parent=0x7f07000c;
@@ -553,6 +553,7 @@ containing a value of this type.
         public static final int auth_client_using_bad_version_title=0x7f050000;
         public static final int calibrationCancelled=0x7f050027;
         public static final int calibrationSuccess=0x7f050026;
+        public static final int cameraMove=0x7f050033;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
         can enable it [CHAR LIMIT=40] 
@@ -649,7 +650,6 @@ containing a value of this type.
         public static final int gyroscopeCalibrationMsg=0x7f05002b;
         public static final int gyroscopeCalibrationProgress=0x7f05002c;
         public static final int gyroscopeCalibrationTitle=0x7f05002a;
-        public static final int mapFix=0x7f050033;
         public static final int mapStartPointResetFailed=0x7f050032;
         public static final int mapStartPointResetSuccess=0x7f050031;
         public static final int mapStartPointSpinnerLabel=0x7f050030;

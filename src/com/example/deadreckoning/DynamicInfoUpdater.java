@@ -19,13 +19,15 @@ public class DynamicInfoUpdater {
 	
 	private Handler diuHandler=null;
 	private int uiUpdateRate;
-	private Map<Integer,Fragment> fragmentClassMap = new HashMap<Integer,Fragment>();
+	private Map<Integer,FragmentControl> fragmentClassMap = new HashMap<Integer,FragmentControl>();
 	private Map<Integer,Info> infoClassMap = new HashMap<Integer,Info>();
 	
-	public DynamicInfoUpdater(Map<Integer,Fragment> fragment, Map<Integer,Info> info) {
+	public DynamicInfoUpdater(Map<Integer,FragmentControl>fragment, Map<Integer,Info>info) {
 		this.infoClassMap=info;
 		this.fragmentClassMap=fragment;
-		this.init();
+		//THIS ONLY RUN ONCE
+		this.initInfo();
+		this.updateFragment();
 	}
 	
 	public void restart(int uiUpdateRate) {
@@ -40,17 +42,27 @@ public class DynamicInfoUpdater {
         }
 	}
 	
-	private void init() {
+	private void updateFragment() {
     	diuHandler = new Handler();
         diuRunner.run();
 	}
 	
-	protected void update() {
-    	Iterator<Entry<Integer, Fragment>> iter = this.fragmentClassMap.entrySet().iterator();
+	protected void initInfo(){
+		Iterator<Entry<Integer, Info>> iter = this.infoClassMap.entrySet().iterator();
+		while (iter.hasNext()){
+			Entry<Integer, Info> pair = iter.next();
+			Info tempClass = pair.getValue();
+			tempClass.init();
+		}
+	}
+	
+	//THIS RUNS EVERY uiUpdateRate time
+	protected void updateUI() {
+    	Iterator<Entry<Integer, FragmentControl>> iter = this.fragmentClassMap.entrySet().iterator();
     	while (iter.hasNext()) {
-    		Entry<Integer, Fragment> pair = iter.next();
-    		Fragment tempClass = pair.getValue();
-        	tempClass.update();
+    		Entry<Integer, FragmentControl> pair = iter.next();
+    		FragmentControl tempClass = pair.getValue();
+    		tempClass.updateUI();
     		Iterator<Entry<String, TextView>> it = tempClass.uiMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, TextView> pairs = (Map.Entry<String, TextView>)it.next();
@@ -67,25 +79,11 @@ public class DynamicInfoUpdater {
     	}
     	
     }
-	
-	protected void initUI(int pos) {
-		if(this.infoClassMap.containsKey(pos)) {
-			Info tempClass = this.infoClassMap.get(pos);
-			tempClass.init();
-			tempClass.createUiMap();
-		}
-	}
-    
-//    class UpdateDynamicInfoTask extends TimerTask {
-//	    public void run() {
-//	    	update();
-//	    }
-//    }
     
     Runnable diuRunner = new Runnable()
     {
 		public void run() {
-              update();
+              updateUI();
               diuHandler.postDelayed(diuRunner, uiUpdateRate);
          }
     };

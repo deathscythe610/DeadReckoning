@@ -1,6 +1,5 @@
 package com.example.deadreckoning;
 
-import java.util.ArrayList;
 import android.location.Location;
 
 

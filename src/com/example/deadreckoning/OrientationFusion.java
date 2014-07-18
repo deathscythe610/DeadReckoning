@@ -234,7 +234,7 @@ public class OrientationFusion {
 	}
     
     public float getGyroscopeZOrientation() {
-		return this.gyroscopeOrientation[0]+MainActivity.getInstance().mapInfo.getCurMap().getOrientationOffsetRadians();
+		return this.gyroscopeOrientation[0]+MainActivity.getInstance().mapFragment.getCurMap().getOrientationOffsetRadians();
 	}
     
     public float[] getCompassOrientation() {
@@ -242,7 +242,7 @@ public class OrientationFusion {
 	}
     
     public float getCompassZOrientation() {
-		return this.compassOrientation[0]+MainActivity.getInstance().mapInfo.getCurMap().getOrientationOffsetRadians();
+		return this.compassOrientation[0]+MainActivity.getInstance().mapFragment.getCurMap().getOrientationOffsetRadians();
 	}
 	
 	public void startGyroscopeCalibration() {
@@ -301,7 +301,7 @@ public class OrientationFusion {
 	}
 	
 	protected float getOrientationDiscrete() {
-		float o = this.getFusedOrientation()[0]+MainActivity.getInstance().mapInfo.getCurMap().getOrientationOffsetRadians();
+		float o = this.getFusedOrientation()[0]+MainActivity.getInstance().mapFragment.getCurMap().getOrientationOffsetRadians();
 		o=(float) (Math.round(o/this.DIRECTION_DIV)*this.DIRECTION_DIV);
 		return o;
 	}
@@ -311,7 +311,7 @@ public class OrientationFusion {
 	}
 	
 	public float getFusedZOrientation() {
-		return this.fusedOrientation[0]+MainActivity.getInstance().mapInfo.getCurMap().getOrientationOffsetRadians();
+		return this.fusedOrientation[0]+MainActivity.getInstance().mapFragment.getCurMap().getOrientationOffsetRadians();
 	}
 
 	
