@@ -353,7 +353,6 @@ public class MapInfo extends Info implements OnSeekBarChangeListener{
 	}
 	
 	public PointF MapFix(PointF DRestimate, float brearing, long timestamp){
-		Toast.makeText(MainActivity.getInstance(), "Doing Mapmatching", Toast.LENGTH_SHORT).show();
 		Location location = setLocation(DRestimate);
 		FetchSQL.setDRFixData(location);
 		//Only fix map point if node list is loaded

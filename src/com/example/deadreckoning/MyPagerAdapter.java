@@ -18,6 +18,7 @@ public class MyPagerAdapter extends PagerAdapter {
 		
 		public MyPagerAdapter(MainActivity activity) {
 			myPager = (ExtendedViewPager) activity.findViewById(R.id.mypager);
+			myPager.setOffscreenPageLimit(2);
 	        myPager.setAdapter(this);
 		}
 	
