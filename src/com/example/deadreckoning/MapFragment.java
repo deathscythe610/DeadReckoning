@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -50,12 +52,21 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class MapFragment extends FragmentControl  implements OnSeekBarChangeListener{
 	
+	private static final String TAG = "Map_Fragment";
 	private static final int TRANSPARENCY_MAX = 100;
 	public static Location mapFixLocation = new Location("dummyprovider");
     private static final LatLng NEWARK = new LatLng(1.292412, 103.775672);
     private final List<BitmapDescriptor> mImages = new ArrayList<BitmapDescriptor>();
+    private final double EarthRadius = 6371000;
+    private static final int wifiFixRadius = 6;
+    private int steps = 0;
+    private long steptime = 0;
     
-    private static final String TAG = "TM_MapInfo";
+    private PointF mapPoint = new PointF(0,0);
+    private float orientation = 0;
+    private float distance = 0;
+    
+    
     protected GoogleMap mMap;
     private SupportMapFragment supportfragment;
     private GroundOverlay mGroundOverlay;
@@ -68,16 +79,30 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
     private Marker marker;
     private HashMap<String,Map> mapList = new HashMap<String,Map>();
     private PointF defaultStartPoint = new PointF(1.292214f, 103.776072f);
-    private static boolean moveCamera;
+    private static boolean moveCamera = true;
 	private int mCurrentPage;
 	private String pageTitle;
 	public Map curMap;
-	
-    public MapFragment(){
+	public static MapFragment instance;
+    private Timer mapTimer;
+    private boolean requireupdate = false;
+    
+//*****************************************************************************************************************************
+//   												MAP INITIALIZATION   
+//*****************************************************************************************************************************
+	public MapFragment(){
     	super();
     	this.loadMaps();
     }
-    
+	
+	public static MapFragment getInstance() {
+		if(MapFragment.instance==null) {
+			Log.e(TAG,"Map Fragment is not loaded");
+		}
+		return MapFragment.instance;
+	}
+	
+	
     public static MapFragment newInstance(int position, String title){
     	MapFragment mapFragment = new MapFragment();
     	Bundle args = new Bundle();
@@ -87,11 +112,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
     	return mapFragment;
     }
  
-    
-//*****************************************************************************************************************************
-//   												MAP INITIALIZATION   
-//*****************************************************************************************************************************
-    private void loadMaps() {
+	private void loadMaps() {
 		try {
 			Resources res = MainActivity.getInstance().getResources();
 			XmlResourceParser xpp = res.getXml(R.xml.map);
@@ -144,6 +165,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 		super.onCreate(savedInstanceState);
 		mCurrentPage = getArguments().getInt("current_page", 0);
 		pageTitle = getArguments().getString("page_title");
+		MapFragment.instance=this;
 	}
 
 	@Override
@@ -155,6 +177,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 			return null;
     	}
     	CheckBox camera = (CheckBox)layout.findViewById(R.id.cameraMove);
+    	camera.setChecked(MapFragment.moveCamera);
     	camera.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				MapFragment.moveCamera = isChecked;
@@ -164,7 +187,6 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
         mTransparencyBar.setMax(TRANSPARENCY_MAX);
         mTransparencyBar.setProgress(0);
         markerList = new ArrayList<Marker>();
-        createUiMap();
 		return layout;
 	}
 	
@@ -178,9 +200,29 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 			supportfragment = SupportMapFragment.newInstance();
 			fm.beginTransaction().replace(R.id.googlemap, supportfragment).commit();
 		}
-		createUiMap();
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		createUiMap();
+		mapTimer = new Timer();
+		mapTimer.scheduleAtFixedRate(new updateCalculationTask(), 0, 100);
+		mapTimer.scheduleAtFixedRate(new updateUITask(), 50, MainActivity.uiUpdateRate);	
+	}
+
+	@Override
+	public void onPause() {
+		if (mapTimer!=null)
+			this.mapTimer.cancel();
+		super.onPause();
+	}
+
+	@Override
+	public void onDestroy() {
+		this.removeallMarker();
+		super.onDestroy();
+	}
 
 	void createUiMap() {
 		  // Do a null check to confirm that we have not already instantiated the map.
@@ -216,8 +258,8 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
  * Set up a starting point marker at the beginning of the program and when spinner item is selected 
  */
     private void setUpMarker(float Lat, float Lon){
-    	MainActivity.getInstance().mapInfo.mapPoint.x = Lat;
-    	MainActivity.getInstance().mapInfo.mapPoint.y = Lon;
+    	this.mapPoint.x = Lat;
+    	this.mapPoint.y = Lon;
     	LatLng Position = new LatLng(Lat, Lon);
         marker = mMap.addMarker(new MarkerOptions()
 		.position(Position).title("Marker")
@@ -226,7 +268,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 		.anchor(0.5f, 0.73f)
 		.rotation(0)	
         .flat(true));
-        if (mMap!=null){
+        if ((mMap!=null) && (MapFragment.moveCamera=true)){
         mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
         }
         markerList.add(marker);
@@ -255,7 +297,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 					skipFirst=false;
 					return;
 				}
-				MainActivity.getInstance().deadReckoning.reset();
+				DRFragment.getInstance().reset();
 				removeallMarker();
 				Boolean success = curMap.setPosition(parent.getItemAtPosition(pos).toString());
 				setUpMarker(curMap.getStartLat(), curMap.getStartLon());
@@ -271,24 +313,113 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	}
 	
 	
+	
 //*****************************************************************************************************************************
-//													MAP DSIPLAY UPDATE   
+//													MAP UPDATE   
 //*****************************************************************************************************************************	
-	 
-	@Override
-    public void updateUI() {
+	
+	class updateCalculationTask extends TimerTask{
     	//update only when map has been set up and step number change
-    	if (MainActivity.getInstance().mapInfo!=null){
-    		marker.setRotation((float)Math.toDegrees(MainActivity.getInstance().mapInfo.orientation));
-			if (MainActivity.getInstance().mapInfo.readyupdate){
-				updateMarker(marker, new LatLng(MainActivity.getInstance().mapInfo.mapPoint.x, MainActivity.getInstance().mapInfo.mapPoint.y), MainActivity.getInstance().mapInfo.orientation, false); 		
-				mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-				MainActivity.getInstance().mapInfo.readyupdate = false;
+		@Override
+		public void run() {
+			Log.d("Map_Task", "running updateCalculationTask_Map");
+			if ((MapFragment.getInstance().mMap!=null) && (SensorFragment.getInstance()!=null) && (DRFragment.getInstance()!=null)){
+	    		MapFragment.getInstance().orientation = SensorFragment.getInstance().orientationFusion.getFusedZOrientation()+ MapFragment.getInstance().curMap.getRotationRadians();
+	    		MapFragment.getInstance().distance = DRFragment.getInstance().getDistance();
+	    		if(MapFragment.getInstance().steps < DRFragment.getInstance().getSteps()){
+					steps = DRFragment.getInstance().getSteps();
+					steptime = DRFragment.getInstance().getStepTime();
+					updateCoodinate(distance, orientation);
+					//MapFix called if map fix option is enabled
+					if (MainActivity.mapLocationFixing){
+						MapFragment.getInstance().mapPoint = MapFix(MapFragment.getInstance().mapPoint, orientation,MapFragment.getInstance().steptime);
+					}
+					MapFragment.getInstance().requireupdate=true;
+	    		}
+	    	}
+		}
+	}
+    
+	public void updateCoodinate(float distance, float orientation){
+		double newLat,newLon;
+		if ((mapPoint.x==0) && (mapPoint.y==0)){
+			newLat = this.curMap.getStartLat();
+			newLon = this.curMap.getStartLon();
+		}
+		else
+		{
+			double orgLat = Math.toRadians(mapPoint.x);
+			double orgLon = Math.toRadians(mapPoint.y);
+			newLat = Math.asin(Math.sin(orgLat)*Math.cos(distance/this.EarthRadius) +
+										Math.cos(orgLat)*Math.sin(distance/this.EarthRadius)*Math.cos(orientation));
+			newLon = orgLon + Math.atan2(Math.sin(orientation)*Math.sin(distance/this.EarthRadius)*Math.cos(orgLat), 
+														Math.cos(distance/this.EarthRadius)-Math.sin(orgLat)*Math.sin(newLat));
+		}
+		if ((!Double.isNaN(newLat)) && (!Double.isNaN(newLon))){
+			mapPoint.x = (float) Math.toDegrees(newLat);
+			mapPoint.y = (float) Math.toDegrees(newLon);
+		}
+	}
+
+	
+	public Boolean wifiLocationFix(String bssid) {
+		if(this.curMap.hasWifiAP(bssid)) {
+			WiFiAP temp = this.curMap.getWifiAP(bssid);
+			float orgLat = this.getLat();
+			float orgLon = this.getLon();
+			float dLat = orgLat - temp.Lat;
+			float dLon = orgLon - temp.Lon;
+			double Bx = Math.cos(temp.Lat) * Math.cos(dLon);
+	        double By = Math.cos(temp.Lat) * Math.sin(dLon);
+	        double dist = Math.sin(orgLat) * Math.sin(temp.Lat) + Math.cos(orgLat) * Math.cos(temp.Lat) * Math.cos(dLon);
+			if(dist>wifiFixRadius) { //fix location
+				double lat3 = Math.atan2(Math.sin(orgLat)+Math.sin(temp.Lat),Math.sqrt( (Math.cos(orgLat)+Bx)*(Math.cos(orgLat)+Bx) + By*By) );
+		        double lon3 = orgLon + Math.atan2(By, Math.cos(orgLat) + Bx);
+				DRFragment.getInstance().reset();
+				this.curMap.setPosition((float) lat3, (float) lon3);
+				Misc.toast("wifi location fixed");
+				DataLogManager.addLine("wififix", orgLat+", "+orgLon+", " + this.curMap.getStartLat()+", "+ this.curMap.getStartLon());
+				return true;
 			}
-    	}
+		}
+		return false;
+	}
+	
+	
+	public PointF MapFix(PointF DRestimate, float brearing, long timestamp){
+		Location location = setLocation(DRestimate);
+		FetchSQL.setDRFixData(location);
+		//Only fix map point if node list is loaded
+		if (MapFixing.mapNodesList.size()>0){
+			location = MapFixing.STMatching(location,brearing,timestamp);
+		}
+		DRestimate.x = (float) location.getLatitude();
+		DRestimate.y = (float) location.getLongitude();
+		return DRestimate;
+	}
+	
+
+	
+    class updateUITask extends TimerTask {
+		public void run() {
+			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable(){
+				public void run() {
+					Log.d("Map_UI", "running updateUITask_Map");
+					//update only when map has been set up and step number change
+			    	if (MapFragment.getInstance().mMap!=null){
+			    		marker.setRotation((float)Math.toDegrees(MapFragment.getInstance().orientation));
+						if (MapFragment.getInstance().requireupdate){
+							updateMarker(marker, new LatLng(MapFragment.getInstance().mapPoint.x, MapFragment.getInstance().mapPoint.y), MapFragment.getInstance().orientation, false); 		
+							if (MapFragment.moveCamera)
+								mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+							MapFragment.getInstance().requireupdate = false;
+						}
+					}
+		    	}
+			}));
+		}
     }
  
-	 
 	public void updateMarker(final Marker marker, final LatLng toPosition, final float orientation,
             final boolean hideMarker) {
         final Handler handler = new Handler();
@@ -333,14 +464,10 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	        }
 	}
 	
+	
 //*****************************************************************************************************************************
 //														SUPPORT FUNCTION  
 //*****************************************************************************************************************************	
-
-	public View getView(){
-		return this.layout;
-	}
-	
 	public Location setLocation(PointF mark){
 		Location location = new Location("dummyprovider");
 		location.setLatitude(mark.x);
@@ -348,7 +475,19 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 		location.setTime(SystemClock.uptimeMillis());
 		return location;
 	}
-
+	
+	private float getLat(){
+		return this.mapPoint.x;
+	}
+	
+	private float getLon(){
+		return this.mapPoint.y;
+	}
+	
+	public View getView(){
+		return this.layout;
+	}
+	
 	public Map getCurMap() {
 		return this.curMap;
 	}

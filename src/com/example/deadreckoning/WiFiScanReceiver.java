@@ -82,7 +82,7 @@ public class WiFiScanReceiver extends BroadcastReceiver {
 	    for (ScanResult result : this.lastResults) {
 	      if (result.level>=lockLevelTreshold) {
 //	    	  Log.d(TAG,"got lock on: "+result.BSSID+"@"+result.level+"db");
-	    	  if(MainActivity.getInstance().mapInfo.wifiLocationFix(result.BSSID)) {
+	    	  if(MapFragment.getInstance().wifiLocationFix(result.BSSID)) {
 	    		  return;
 	    	  }
 	      }

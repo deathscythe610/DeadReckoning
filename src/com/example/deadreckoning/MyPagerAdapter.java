@@ -56,12 +56,6 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     
         
         @Override
-        public boolean isViewFromObject(View arg0, Object arg1) {
-            return arg0 == ((View) arg1);
- 
-        }
-        
-        @Override
         public Parcelable saveState() {
         	return null;
         }

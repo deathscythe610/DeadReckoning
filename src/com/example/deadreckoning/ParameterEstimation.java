@@ -39,9 +39,9 @@ public class ParameterEstimation {
 	private float distanceReported = 0;
 	
 	private LinkedHashMap<Long, Float> azData = new LinkedHashMap<Long, Float>(); // timestamp => acceleration
-	private DeadReckoning dr;
+	private DRFragment dr;
 	
-	public ParameterEstimation(DeadReckoning dr) {
+	public ParameterEstimation(DRFragment dr) {
 		this.dr=dr;
 	}
 	
@@ -156,7 +156,7 @@ public class ParameterEstimation {
 	}
 	
 	private void testThreshold(float minThreshold, float maxThreshold, float K, boolean stateLogging) {
-		DeadReckoning dr = new DeadReckoning();
+		DRFragment dr = new DRFragment();
 		dr.stateLogging=stateLogging;
 		dr.setParameters(maxThreshold,minThreshold, K);
 		
