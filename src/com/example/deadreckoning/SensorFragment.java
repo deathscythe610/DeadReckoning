@@ -29,7 +29,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 	protected int sensorDelay = SensorManager.SENSOR_DELAY_NORMAL;
 	protected SensorManager sensorManager;
 	private Timer logTimer;
-	
+
 	//define public variables to display in sensor fragment
 	public float[] magneticFieldValues={0,0,0};
 	public float[] accelerometerValues={0,0,0};
@@ -56,7 +56,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		}
 		return SensorFragment.instance;
 	}
-	
+
 	public SensorFragment(){
 		super();
 		this.linearAccelerometerValues=new float[4];
@@ -64,7 +64,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		this.sensorManager = (SensorManager)MainActivity.getInstance().getSystemService(Context.SENSOR_SERVICE);
 		this.orientationFusion=new OrientationFusion();
 	}
-	
+
 	public static SensorFragment newInstance(int position, String title){
     	SensorFragment sensorFragment = new SensorFragment();
     	Bundle args = new Bundle();
@@ -73,7 +73,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
     	sensorFragment.setArguments(args);
     	return sensorFragment;
     }
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,7 +83,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		this.init();
 	}
 
-	
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,14 +123,14 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		uiMap.put("logInfo", (TextView) layout.findViewById(R.id.logInfo));
 		return layout;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
 		sensorinfoTimer = new Timer();
 		sensorinfoTimer.scheduleAtFixedRate(new updateUITask(), 50, MainActivity.uiUpdateRate);
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -150,16 +150,16 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 			DataLogManager.addLine("datalog", "%%% K="+ DRFragment.getInstance().getK()+";",false);
 		else
 			DataLogManager.addLine("datalog", "%%% K=0.95;",false);
-		
+
 		if (MapFragment.getInstance()!=null)
 			DataLogManager.addLine("datalog", "%%% orientationOffset="+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians()+";",false);
 		else 
 			DataLogManager.addLine("datalog", "%%% orientationOffset=0;",false);
-		
+
 		DataLogManager.addLine("datalog", "%%% filterCoefficient="+this.orientationFusion.getFilterCoefficient()+";",false);
 	}
-	
-	
+
+
 	public void registerSensors() {
     	Sensor accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     	if(accelSensor!=null) {
@@ -198,39 +198,39 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 			valuesMap.put("magneticFieldZSensorValue","-");
     	}
     }
-	
-	
+
+
 	public void stopLogging() {
 		if(this.logTimer!=null)
 			this.logTimer.cancel();
 	}
-	
-	
+
+
 
 
 //*******************************************************************************************************************
 //											FUNCTION CALCULATION AND UPDATE
 //*******************************************************************************************************************	
-	
+
 	private void updateWorldAcceleration() {
 		float[] rotationMatrix = this.orientationFusion.getRotationMatrix();
 		if(rotationMatrix!=null && this.linearAccelerometerValues!=null) {
 			double[][] result = MatrixHelper.matrixMultiply(rotationMatrix, 3, 3, linearAccelerometerValues, 3, 1);
-			
+
 			this.worldAccelerationX=result[0][0];
 			this.worldAccelerationY=result[1][0];
 			this.worldAccelerationZ=result[2][0];
 			this.logData();
 		}
 	}
-	
+
 	public void onSensorChanged(SensorEvent event) {
 		Log.d("DR_SensorChanged","Log Sensor Change");
 		int sensorType = event.sensor.getType();
 		if(sensorType==Sensor.TYPE_ACCELEROMETER){
 			accelerometerValues=event.values.clone();
 			this.orientationFusion.setAccelerometer(accelerometerValues);
-		   
+
 			valuesMap.put("accelerometerXSensorValue",String.valueOf(event.values[0]));
 			valuesMap.put("accelerometerYSensorValue",String.valueOf(event.values[1]));
 			valuesMap.put("accelerometerZSensorValue",String.valueOf(event.values[2]));
@@ -257,17 +257,17 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		if(sensorType==Sensor.TYPE_MAGNETIC_FIELD){
 			magneticFieldValues=event.values.clone();
 			this.orientationFusion.setMagneticField(magneticFieldValues);
-		   
+
 			valuesMap.put("magneticFieldXSensorValue",String.valueOf(event.values[0]));
 			valuesMap.put("magneticFieldYSensorValue",String.valueOf(event.values[1]));
 			valuesMap.put("magneticFieldZSensorValue",String.valueOf(event.values[2]));
 		}
 	}
-	
+
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 	    // TODO Auto-generated method stub
 	}
-		
+
 	class updateUITask extends TimerTask {
 		public void run() {
 			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable() {
@@ -286,7 +286,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 					valuesMap.put("displacementZSensorValue", SensorFragment.getInstance().displacementZ + "");
 					Iterator<Entry<String, TextView>> it = SensorFragment.getInstance().uiMap.entrySet().iterator();
 					while (it.hasNext()) {
-						Map.Entry<String, TextView> pairs = (Map.Entry<String, TextView>)it.next();
+						java.util.Map.Entry<String, TextView> pairs = (java.util.Map.Entry<String, TextView>)it.next();
 						 if(SensorFragment.getInstance().valuesMap.containsKey(pairs.getKey())) {
 			                	TextView temp = pairs.getValue();
 			                	if(temp!=null) {
@@ -295,19 +295,20 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 			                		Log.d(TAG,pairs.toString());
 			                	}
 					}
+					}
 				}
 			}));
 		}
 	}
-	
+
 //*******************************************************************************************************************
 //												SUPPORT FUNCTIONS 
 //*******************************************************************************************************************	
-	
+
 	public View getLayout(){
-		return this.layout;
+		return SensorFragment.getInstance().layout;
 	}
-	
+
 	public void triggerGyroscopeCalibration() {
 		new AlertDialog.Builder(MainActivity.getInstance())
 			.setTitle(R.string.gyroscopeCalibrationTitle)
@@ -319,14 +320,14 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 			    }
 		    }).setNegativeButton(android.R.string.cancel,  new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog, int whichButton) {
-			    	
+
 			    }
 		    }).show();
 	}
-	
 
-    public void logData() {
-    	int steps = 0;
+
+	private void logData() {
+		int steps = 0;
     	if (DRFragment.getInstance()!=null) steps = DRFragment.getInstance().getSteps();
     	float[] oFused = orientationFusion.getFusedOrientation();
     	float[] orgGyro = orientationFusion.getOriginalGyroscopeOrientation();
@@ -345,18 +346,19 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
     			+orgGyro[0]+","+orgGyro[1]+","+orgGyro[2]
     					;
     	DataLogManager.addLine("datalog",line);
-    }
+}
 
-	
+
+
 	public void reloadSettings(int sensorDelay, float gyroscopeXOffset, float gyroscopeYOffset, float gyroscopeZOffset, short orientationSource, float filterCoefficient) {
 		this.sensorDelay=sensorDelay;
 		this.orientationFusion.reloadSettings(gyroscopeXOffset,gyroscopeYOffset,gyroscopeZOffset,orientationSource,filterCoefficient);
 	}
-	
+
 	public float getWorldAccelerationZ() {
 		return (float)this.worldAccelerationZ;
 	}
-	
+
 	public float getWorldAccelerationX() {
 		return (float)this.worldAccelerationX;
 	}
