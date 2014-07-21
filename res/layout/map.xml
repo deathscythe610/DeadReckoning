@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-
-
     <CheckBox
         android:id="@+id/cameraMove"
         android:layout_width="wrap_content"
@@ -57,12 +55,11 @@
       android:layout_below="@id/seekbarmenu"
       android:layout_marginTop="15dip" >
 
-    <fragment
-      android:id="@+id/googlemap"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_margin="10dip"
-      class="com.google.android.gms.maps.SupportMapFragment"/>
+    <FrameLayout
+   	android:layout_width="match_parent"
+  	android:layout_height="match_parent"
+ 	android:layout_margin="5dip"
+   	android:id="@+id/googlemap" />
   </LinearLayout>
-    
+   
 </RelativeLayout>

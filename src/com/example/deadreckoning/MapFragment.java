@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public class MapFragment extends FragmentControl  implements OnSeekBarChangeListener{
+public class MapFragment extends FragmentControl implements OnSeekBarChangeListener{
 	
 	private static final String TAG = "Map_Fragment";
 	private static final int TRANSPARENCY_MAX = 100;
@@ -169,10 +170,10 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		layout = (View)inflater.inflate(R.layout.map, container, false);
-    	if (layout==null){
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		layout = inflater.inflate(R.layout.map, container, false);
+    	
+		if (layout==null){
     		Log.d(TAG,"layout null");
 			return null;
     	}
@@ -190,26 +191,27 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 		return layout;
 	}
 	
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		FragmentManager fm = getChildFragmentManager();
 		supportfragment = (SupportMapFragment) fm.findFragmentById(R.id.googlemap);
 		if (supportfragment == null) {
-			supportfragment = SupportMapFragment.newInstance();
-			fm.beginTransaction().replace(R.id.googlemap, supportfragment).commit();
+		    supportfragment = SupportMapFragment.newInstance();
+		    fm.beginTransaction().replace(R.id.googlemap, supportfragment).commit();
+		    fm.executePendingTransactions();
 		}
 	}
-
+	
 	@Override
 	public void onResume() {
 		super.onResume();
-		createUiMap();
+		this.createUiMap();
 		mapTimer = new Timer();
 		mapTimer.scheduleAtFixedRate(new updateCalculationTask(), 0, 100);
 		mapTimer.scheduleAtFixedRate(new updateUITask(), 50, MainActivity.uiUpdateRate);	
 	}
+	
 
 	@Override
 	public void onPause() {
@@ -224,23 +226,21 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 		super.onDestroy();
 	}
 
-	void createUiMap() {
-		  // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-        	mMap = supportfragment.getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-                populateMapStartPointsSpinner(layout);
-                setStartPointSpinnerListener(layout);
-                this.setUpMarker(this.defaultStartPoint.x, this.defaultStartPoint.y);
-                FetchSQL.setDRFixData(this.setLocation(defaultStartPoint));
-            }
-        }
+	private void createUiMap() {
+		 if (mMap == null) {
+			// Try to obtain the map from the SupportMapFragment.
+	        mMap = supportfragment.getMap();
+	        // Check if we were successful in obtaining the map.
+	        if (mMap != null) {
+	            setUpMap();
+	            populateMapStartPointsSpinner(layout);
+	            setStartPointSpinnerListener(layout);
+	            this.setUpMarker(this.defaultStartPoint.x, this.defaultStartPoint.y);
+	            FetchSQL.setDRFixData(this.setLocation(defaultStartPoint));
+	         }
+		}
 	}
-
-
+	
     private void setUpMap() {
         	mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(NEWARK, 20));
         	mImages.add(BitmapDescriptorFactory.fromResource(R.drawable.i3f2));
@@ -254,9 +254,9 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
         	mTransparencyBar.setOnSeekBarChangeListener(this);
         }
         
-/*
- * Set up a starting point marker at the beginning of the program and when spinner item is selected 
- */
+
+ // Set up a starting point marker at the beginning of the program and when spinner item is selected 
+
     private void setUpMarker(float Lat, float Lon){
     	this.mapPoint.x = Lat;
     	this.mapPoint.y = Lon;
@@ -273,14 +273,15 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
         }
         markerList.add(marker);
     }
-
+    
     public void removeallMarker(){
     	if ((marker!=null) && (markerList!=null)){
     		marker.remove();
     		markerList.clear();
     	}
     }
-	
+    
+    
 	private void populateMapStartPointsSpinner(View layout) {
 		Spinner sp = (Spinner)layout.findViewById(R.id.mapStartPointSpinner);
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(MainActivity.getInstance(),android.R.layout.simple_spinner_dropdown_item,this.curMap.getMapPointList());
@@ -312,7 +313,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 		});
 	}
 	
-	
+
 	
 //*****************************************************************************************************************************
 //													MAP UPDATE   
@@ -399,7 +400,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	}
 	
 
-	
+
     class updateUITask extends TimerTask {
 		public void run() {
 			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable(){
@@ -456,7 +457,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
         });
         marker.setRotation((float)Math.toDegrees(orientation));
     }
-	
+
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		   if (mGroundOverlay != null) {
@@ -465,6 +466,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	}
 	
 	
+
 //*****************************************************************************************************************************
 //														SUPPORT FUNCTION  
 //*****************************************************************************************************************************	
@@ -476,6 +478,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 		return location;
 	}
 	
+	
 	private float getLat(){
 		return this.mapPoint.x;
 	}
@@ -483,19 +486,12 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	private float getLon(){
 		return this.mapPoint.y;
 	}
-	
+	/*
 	public View getView(){
 		return this.layout;
 	}
 	
-	public Map getCurMap() {
-		return this.curMap;
-	}
-	
-	public View getLayout(){
-		return this.layout;
-	}
-		
+`*/
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
@@ -504,5 +500,14 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
+	}
+	
+
+	public Map getCurMap() {
+		return this.curMap;
+	}
+	
+	public View getLayout(){
+		return this.layout;
 	}
 }
