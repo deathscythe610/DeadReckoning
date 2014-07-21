@@ -106,7 +106,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
     public static MapFragment newInstance(int position, String title){
     	MapFragment mapFragment = new MapFragment();
     	Bundle args = new Bundle();
-    	args.putInt("current_page", 0);
+    	args.putInt("current_page", 1);
     	args.putString("page_tile", "Map Information");
     	mapFragment.setArguments(args);
     	return mapFragment;
@@ -163,7 +163,7 @@ public class MapFragment extends FragmentControl  implements OnSeekBarChangeList
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mCurrentPage = getArguments().getInt("current_page", 0);
+		mCurrentPage = getArguments().getInt("current_page", 1);
 		pageTitle = getArguments().getString("page_title");
 		MapFragment.instance=this;
 	}

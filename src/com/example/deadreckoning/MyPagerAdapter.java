@@ -9,7 +9,6 @@ import android.view.View;
 public class MyPagerAdapter extends FragmentPagerAdapter {
 		private static final String TAG = "TM_PageAdapter";
 		private static int numItems = 3;
-		public int fragmentcreated = 0;
 		
 		public MyPagerAdapter(FragmentManager fragmentManager){
 			super(fragmentManager);
@@ -23,14 +22,11 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 		public Fragment getItem(int position) {
         	switch(position){
         		case 0:
-        			this.fragmentcreated++;
-        			return MapFragment.newInstance(0, "Map Information");
+        			return DRFragment.newInstance(0, "DR Information");
         		case 1:
-        			this.fragmentcreated++;
-        			return DRFragment.newInstance(1, "DR Information");
+        			return MapFragment.newInstance(1, "Map Information");
         		case 2: 
-        			this.fragmentcreated++;
-        			return SensorFragment.newInstance(2, "Sensor Information");
+        			return SensorFragment.newInstance(2, "Sensor Information");	
         		default: 
         			return null;
         	}
@@ -40,9 +36,9 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 		public CharSequence getPageTitle(int position) {
 			switch(position){
 				case 0:
-					return "Map Information";
-				case 1:
 					return "DR Information";
+				case 1:
+					return "Map Information";
 				case 2: 
 					return "Sensor Information";
 				default:

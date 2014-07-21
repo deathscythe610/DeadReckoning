@@ -7,7 +7,7 @@
             android:key="startup_screen"
             android:title="Startup screen"
             android:summary="Define which screen to show after startup"
-            android:defaultValue="0" 
+            android:defaultValue="1" 
             android:entries="@array/startup_screen"
             android:entryValues="@array/startup_screen_values"
         />

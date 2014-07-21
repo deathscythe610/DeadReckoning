@@ -55,6 +55,7 @@ public class MainActivity extends FragmentActivity{
 	protected WifiManager wifiManager;
 	private BroadcastReceiver broadcastReceiver=null;
 	public static int uiUpdateRate = 500; 
+	public static int startupScreen = 1;
 	
 	
 	public static MainActivity getInstance() {
@@ -89,24 +90,27 @@ public class MainActivity extends FragmentActivity{
         vpPager.setOffscreenPageLimit(2);
         pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(pagerAdapter);
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-		int startupScreen = Integer.valueOf(sharedPrefs.getString("startup_screen","0"));
-		vpPager.setCurrentItem(startupScreen);
-		
+        //Set default start up screen
+        Log.i(MainActivity.TAG,"Startup Screen: " + startupScreen);
+  		vpPager.setCurrentItem(startupScreen);
+  		
 		vpPager.setOnPageChangeListener(new OnPageChangeListener() {
 
             @Override
             public void onPageSelected(int index) {
                 switch(index){
                 	case 0:
-                		MainActivity.getInstance().mapFragment = (MapFragment)MainActivity.getInstance().findFragmentByPosition(0);
-                		MainActivity.getInstance().fragmentClassMap.put(0, MainActivity.getInstance().mapFragment);
+                		MainActivity.getInstance().drFragment = (DRFragment)MainActivity.getInstance().findFragmentByPosition(0);
+                		MainActivity.getInstance().fragmentClassMap.put(0, MainActivity.getInstance().drFragment);
                 	case 1:
-                		MainActivity.getInstance().drFragment = (DRFragment)MainActivity.getInstance().findFragmentByPosition(1);
-                		MainActivity.getInstance().fragmentClassMap.put(1, MainActivity.getInstance().drFragment);
+                		MainActivity.getInstance().mapFragment = (MapFragment)MainActivity.getInstance().findFragmentByPosition(1);
+                		MainActivity.getInstance().fragmentClassMap.put(1, MainActivity.getInstance().mapFragment);
+                		
                 	case 2: 
                 		MainActivity.getInstance().sensorFragment = (SensorFragment)MainActivity.getInstance().findFragmentByPosition(2);
                 		MainActivity.getInstance().fragmentClassMap.put(2, MainActivity.getInstance().sensorFragment);
+                		
+                		
                 }
             }
 
@@ -120,11 +124,10 @@ public class MainActivity extends FragmentActivity{
                 // TODO Auto-generated method stub
             }
         });
-        
         //init default SQL configuration
         SQLSettingsActivity.initSQLConfig();
-        
         this.reloadSettings();
+  		
         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"
                 + Environment.getExternalStorageDirectory())));
     }
@@ -203,7 +206,8 @@ public class MainActivity extends FragmentActivity{
 		this.unregisterWifiReceiver();
 		super.onStop();
 	};
-	//Need to check, will give null pointer
+
+	
 	protected void reloadSettings() {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         int uiUpdateRate = Integer.valueOf(sharedPrefs.getString("ui_refresh_speed","500"));
@@ -213,6 +217,7 @@ public class MainActivity extends FragmentActivity{
         			,Float.parseFloat(sharedPrefs.getString("drThresholdMin", "-0.9"))
         			,Float.parseFloat(sharedPrefs.getString("drK", "0.7"))
         			);
+        MainActivity.startupScreen = Integer.parseInt(sharedPrefs.getString("startup_screen", "1"));
         MainActivity.uiUpdateRate = uiUpdateRate;
         if (SensorFragment.getInstance()!=null)
 	        SensorFragment.getInstance().reloadSettings(Integer.valueOf(sharedPrefs.getString("sensor_refresh_speed","3")),
@@ -251,9 +256,9 @@ public class MainActivity extends FragmentActivity{
     protected View findViewForPositionInPager(int position) {
     	switch(position){
     		case 0: 
-    			return this.mapFragment.getLayout();
-    		case 1:
     			return this.drFragment.getLayout();
+    		case 1:
+    			return this.mapFragment.getLayout();
     		case 2:
     			return this.sensorFragment.getLayout();
     		default:

@@ -288,13 +288,14 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 					while (it.hasNext()) {
 						java.util.Map.Entry<String, TextView> pairs = (java.util.Map.Entry<String, TextView>)it.next();
 						 if(SensorFragment.getInstance().valuesMap.containsKey(pairs.getKey())) {
-			                	TextView temp = pairs.getValue();
-			                	if(temp!=null) {
-			                		temp.setText(SensorFragment.getInstance().valuesMap.get(pairs.getKey()));
-			                	} else {
-			                		Log.d(TAG,pairs.toString());
-			                	}
-					}
+			                TextView temp = pairs.getValue();
+			                if(temp!=null) {
+			                	temp.setText(SensorFragment.getInstance().valuesMap.get(pairs.getKey()));
+			                } 
+			                else {
+			                	Log.d(TAG,pairs.toString());
+			                }
+						 }
 					}
 				}
 			}));

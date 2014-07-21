@@ -1,7 +1,10 @@
 package com.example.deadreckoning;
 
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map.Entry;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -88,7 +91,7 @@ public class DRFragment extends FragmentControl{
 	public static DRFragment newInstance(int position, String title){
     	DRFragment drFragment = new DRFragment();
     	Bundle args = new Bundle();
-    	args.putInt("current_page", 1);
+    	args.putInt("current_page", 0);
     	args.putString("page_tile", "DR Information");
     	drFragment.setArguments(args);
     	return drFragment;
@@ -98,7 +101,7 @@ public class DRFragment extends FragmentControl{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		DRFragment.instance=this;
-		mCurrentPage = getArguments().getInt("current_page", 1);
+		mCurrentPage = getArguments().getInt("current_page", 0);
 		pageTitle = getArguments().getString("page_title");
 	}
 
@@ -115,7 +118,7 @@ public class DRFragment extends FragmentControl{
 		uiMap.put("steps", (TextView) layout.findViewById(R.id.stepsValue));
 		uiMap.put("statesLog", (TextView) layout.findViewById(R.id.statesLog));
 		uiMap.put("distance", (TextView) layout.findViewById(R.id.distanceValue));
-		return super.onCreateView(inflater, container, savedInstanceState);
+		return layout;
 	}
 	
 	@Override
@@ -148,6 +151,7 @@ public class DRFragment extends FragmentControl{
 	}
 	
 	void stepDetected(double orientation, long triggerTime) {
+		Log.d(DRFragment.TAG, "Step detected");
 		this.steps++;
 		this.lastStepTime=triggerTime;
 		float stepDistance = (float)(this.K * Math.pow(this.lastMaximum-this.lastMinimum,0.25));
@@ -296,6 +300,19 @@ public class DRFragment extends FragmentControl{
 					valuesMap.put("steps", DRFragment.getInstance().steps+"");
 					valuesMap.put("statesLog", DRFragment.getInstance().stateLog);
 					valuesMap.put("distance", DRFragment.getInstance().distance+"");
+					Iterator<Entry<String, TextView>> it = DRFragment.getInstance().uiMap.entrySet().iterator();
+					while (it.hasNext()) {
+						java.util.Map.Entry<String, TextView> pairs = (java.util.Map.Entry<String, TextView>)it.next();
+						 if(DRFragment.getInstance().valuesMap.containsKey(pairs.getKey())) {
+			                TextView temp = pairs.getValue();
+			                if(temp!=null) {
+			                	temp.setText(DRFragment.getInstance().valuesMap.get(pairs.getKey()));
+			                }
+			                else {
+			                	Log.d(TAG,pairs.toString());
+			                }
+						 }
+					}
 				}
 			}));
 		}
