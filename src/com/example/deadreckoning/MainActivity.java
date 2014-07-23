@@ -56,7 +56,9 @@ public class MainActivity extends FragmentActivity{
 	private BroadcastReceiver broadcastReceiver=null;
 	public static int uiUpdateRate = 500; 
 	public static int startupScreen = 1;
-	
+	public static int currentScreen = 1;
+	private boolean datalogging = false;
+	private boolean maplogging = false;
 	
 	public static MainActivity getInstance() {
 		if(MainActivity.instance==null) {
@@ -98,19 +100,17 @@ public class MainActivity extends FragmentActivity{
 
             @Override
             public void onPageSelected(int index) {
-                switch(index){
+            	MainActivity.currentScreen = index;
+            	switch(index){
                 	case 0:
                 		MainActivity.getInstance().drFragment = (DRFragment)MainActivity.getInstance().findFragmentByPosition(0);
                 		MainActivity.getInstance().fragmentClassMap.put(0, MainActivity.getInstance().drFragment);
                 	case 1:
                 		MainActivity.getInstance().mapFragment = (MapFragment)MainActivity.getInstance().findFragmentByPosition(1);
-                		MainActivity.getInstance().fragmentClassMap.put(1, MainActivity.getInstance().mapFragment);
-                		
+                		MainActivity.getInstance().fragmentClassMap.put(1, MainActivity.getInstance().mapFragment);	
                 	case 2: 
                 		MainActivity.getInstance().sensorFragment = (SensorFragment)MainActivity.getInstance().findFragmentByPosition(2);
-                		MainActivity.getInstance().fragmentClassMap.put(2, MainActivity.getInstance().sensorFragment);
-                		
-                		
+                		MainActivity.getInstance().fragmentClassMap.put(2, MainActivity.getInstance().sensorFragment);	
                 }
             }
 
@@ -156,13 +156,45 @@ public class MainActivity extends FragmentActivity{
             	finish();
             	return true;
             case R.id.startDataLogMain:
-            	DataLogManager.allow("datalog");
+            	if (!MainActivity.getInstance().datalogging){
+            		Misc.toast("Start Data Log");
+            		DataLogManager.allow("datalog");
+            		DataLogManager.addLine("datalog", "% time | 3x orientation fused | 3x orientation compass | " +
+            				"3x accelerometer world | 3x magnetic field | steps | distance | x | y | " +
+            				"3x gyroscope raw | 3x acceleration | 9x rotation matrix | 3x gyroscope original",false);
+            		DataLogManager.addLine("datalog", "% orientation source: "+ SensorFragment.getInstance().orientationFusion.getOrientationSource(),false);
+            		if (DRFragment.getInstance()!=null)
+            			DataLogManager.addLine("datalog", "%%% K="+ DRFragment.getInstance().getK()+";",false);
+            		else
+            			DataLogManager.addLine("datalog", "%%% K=0.95;",false);
+
+            		if (MapFragment.getInstance()!=null)
+            			DataLogManager.addLine("datalog", "%%% orientationOffset="+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians()+";",false);
+            		else 
+            			DataLogManager.addLine("datalog", "%%% orientationOffset=0;",false);
+
+            		DataLogManager.addLine("datalog", "%%% filterCoefficient="+ SensorFragment.getInstance().orientationFusion.getFilterCoefficient()+";",false);
+            		MainActivity.getInstance().datalogging=true;
+            	}
+            	else{ 
+            		MainActivity.getInstance().datalogging=false;
+            		DataLogManager.saveLog("datalog");
+            		Misc.toast("Stop Data Log");
+            	}
             	return true;
             case R.id.startDataLogMapPath:
-            	DataLogManager.allow("wififix");
-            	String wififixLogName = DataLogManager.initLog("wififix", null);
-            	DataLogManager.allow("mapPath");
-            	DataLogManager.addLine("mapPath", "%%% wififixfile='"+wififixLogName+"';",false);            	
+            	if(!MainActivity.getInstance().maplogging){
+            		Misc.toast("Start Map Log");
+            		DataLogManager.allow("mapPath");
+                	String line = "StepTime,Estimated DR Lon,Estimated DR Lat,Map Fix Option,Map Fix Change,Map Fix Lat,Map Fix Lon,Map Fix Sector";
+            		DataLogManager.addLine("mapPath", line);
+            		MainActivity.getInstance().maplogging=true;
+            	}
+            	else{ 
+            		MainActivity.getInstance().maplogging=false;
+            		DataLogManager.saveLog("mapPath");
+            		Misc.toast("Stop Map Log");
+            	}
             	return true;
             case R.id.drCalibration:
             	DRFragment.getInstance().startCalibrationLogging();
@@ -263,12 +295,6 @@ public class MainActivity extends FragmentActivity{
     			return this.sensorFragment.getLayout();
     		default:
     			return null;
-    	}
-    }
-    
-    class FetchMapDataTask extends TimerTask {
-    	public void run() {
-    		new FetchSQL().execute();
     	}
     }
     

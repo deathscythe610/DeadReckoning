@@ -151,7 +151,7 @@ public class DRFragment extends FragmentControl{
 	}
 	
 	void stepDetected(double orientation, long triggerTime) {
-		Log.d(DRFragment.TAG, "Step detected");
+		//Log.d(DRFragment.TAG, "Step detected");
 		this.steps++;
 		this.lastStepTime=triggerTime;
 		float stepDistance = (float)(this.K * Math.pow(this.lastMaximum-this.lastMinimum,0.25));
@@ -296,7 +296,7 @@ public class DRFragment extends FragmentControl{
 		public void run() {
 			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable(){
 				public void run(){
-					Log.d("DR_UI", "running updateUITask_DR");
+					//Log.d("DR_UI", "running updateUITask_DR");
 					valuesMap.put("steps", DRFragment.getInstance().steps+"");
 					valuesMap.put("statesLog", DRFragment.getInstance().stateLog);
 					valuesMap.put("distance", DRFragment.getInstance().distance+"");
@@ -320,7 +320,7 @@ public class DRFragment extends FragmentControl{
 	
 	class deadReckoningTask extends TimerTask {
 		public void run() {
-			Log.d("DR_Task", "running deadReckingTask_DR");
+			//Log.d("DR_Task", "running deadReckingTask_DR");
 			if (SensorFragment.getInstance()!=null){
 				DRFragment.getInstance().trigger_zhanhy(SensorFragment.getInstance().getWorldAccelerationZ(),SensorFragment.getInstance().getWorldAccelerationX(), SensorFragment.getInstance().orientationFusion.getOrientation());
 			}

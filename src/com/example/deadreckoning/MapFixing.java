@@ -23,7 +23,7 @@ public class MapFixing {
 	static Boolean initPoint = true;
 
 	//Mean and standard deviation in meters
-	static double mu = 0.5;
+	static double mu = 0.3;
 	static double sigma = 1;
 	static double range = 1;
 	static String debugbearing = "Bearing";
@@ -31,6 +31,7 @@ public class MapFixing {
 	
 	public static Location STMatching(Location DRestimation, float orientation, long timestamp){
 		//Clear relevant node list to load new node list
+		Log.d("Map Fixing", "Map Fixing Process Started");
 		Location Bestmatch = new Location("dummyprovider");
 		MapFixing.relevantNodesList.clear();
 		for(int i=0; i< mapNodesList.size(); i++){
@@ -111,26 +112,24 @@ public class MapFixing {
 				//Distance between the GPS fixes
 				double distanceBetweenRawPoints = e.getDRestimation().distanceTo(previousBestNode.getDRestimation());
 				Location locationOfThePreviousPoint = new Location("");
-				locationOfThePreviousPoint.setLatitude(e.getLatitude());
-				locationOfThePreviousPoint.setLongitude(e.getLongitude());
+				locationOfThePreviousPoint.setLatitude(previousBestNode.getLatitude());
+				locationOfThePreviousPoint.setLongitude(previousBestNode.getLongitude());
 
 				Location locationOfTheNextPoint = new Location("");
-				locationOfTheNextPoint.setLatitude(previousBestNode.getLatitude());
-				locationOfTheNextPoint.setLongitude(previousBestNode.getLongitude());
+				locationOfTheNextPoint.setLatitude(e.getLatitude());
+				locationOfTheNextPoint.setLongitude(e.getLongitude());
 
 				//Distance and approximate speed between the two candidate nodes
 				double distanceBetweenTheCandidateNodes = locationOfThePreviousPoint.distanceTo(locationOfTheNextPoint);
-				double meanSpeed = distanceBetweenTheCandidateNodes/(e.getTimestamp()-previousBestNode.getTimestamp());
-
 				//Computing transmission probability
 				double transmissionProbability = (distanceBetweenRawPoints/distanceBetweenTheCandidateNodes);
-				e.setTransmissionProbability(e, transmissionProbability);
+				e.setTransmissionProbability(transmissionProbability);
 			}
 		}
 		else{
 			//If not set transmission of all relevant nodes = 1 and spatial result = observation probability
 			for(CandidateNode e:relevantNodesList){
-				e.setTransmissionProbability(e, 1.0);
+				e.setTransmissionProbability(1.0);
 			}
 		}
 		//Determine the candidate node with the overall highest spatial/temporal function score	
@@ -138,9 +137,15 @@ public class MapFixing {
 			if (e.spatialAnalysisFunctionResults>highestSpatialResult){
 				highestSpatialResult = e.spatialAnalysisFunctionResults;
 				highestSpatialNode = e;
+				Log.i("DEBUG", "HIGHEST NODE REASSIGN");
 				}
 		}	
-		highestSpatialNode.bestMatch=true;
+		for (CandidateNode e:relevantNodesList){
+			if(e==highestSpatialNode){
+				e.bestMatch=true;
+				Log.i("DEBUG", "FOUND BEST MATCH");
+			}
+		}
 }
 	
 	public static void pointWeighting(CandidateNode observationBestMatch, CandidateNode observationSecondBestMatch){

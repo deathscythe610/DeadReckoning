@@ -38,6 +38,7 @@ class FetchSQL extends AsyncTask<Void,Void,String> {
 	}
 
 	public void getMapNodesAndSTMatch(){
+		Log.d("SQL", "Fetch SQL Process Started");
 		ResultSet rsStartNodes = null;
 
 		try {

@@ -22,7 +22,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 
 
-
 public class SensorFragment extends FragmentControl implements SensorEventListener{
 	private static final String TAG = "Sensor_Fragment";
 	public static SensorFragment instance = null;
@@ -142,21 +141,6 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 
 	public void init(){
 		registerSensors();
-		DataLogManager.addLine("datalog", "% time | 3x orientation fused | 3x orientation compass | " +
-				"3x accelerometer world | 3x magnetic field | steps | distance | x | y | " +
-				"3x gyroscope raw | 3x acceleration | 9x rotation matrix | 3x gyroscope original",false);
-		DataLogManager.addLine("datalog", "% orientation source: "+this.orientationFusion.getOrientationSource(),false);
-		if (DRFragment.getInstance()!=null)
-			DataLogManager.addLine("datalog", "%%% K="+ DRFragment.getInstance().getK()+";",false);
-		else
-			DataLogManager.addLine("datalog", "%%% K=0.95;",false);
-
-		if (MapFragment.getInstance()!=null)
-			DataLogManager.addLine("datalog", "%%% orientationOffset="+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians()+";",false);
-		else 
-			DataLogManager.addLine("datalog", "%%% orientationOffset=0;",false);
-
-		DataLogManager.addLine("datalog", "%%% filterCoefficient="+this.orientationFusion.getFilterCoefficient()+";",false);
 	}
 
 
@@ -225,7 +209,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 	}
 
 	public void onSensorChanged(SensorEvent event) {
-		Log.d("DR_SensorChanged","Log Sensor Change");
+		//Log.d("DR_SensorChanged","Log Sensor Change");
 		int sensorType = event.sensor.getType();
 		if(sensorType==Sensor.TYPE_ACCELEROMETER){
 			accelerometerValues=event.values.clone();
@@ -272,7 +256,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		public void run() {
 			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable() {
 				public void run() {
-					Log.d("Sensor_UI", "running updateUITask_Sensor");
+					//Log.d("Sensor_UI", "running updateUITask_Sensor");
 					valuesMap.put("logInfo", DataLogManager.getInfo());
 					float oFused = SensorFragment.getInstance().orientationFusion.getFusedZOrientation();
 					float oGyro = SensorFragment.getInstance().orientationFusion.getGyroscopeZOrientation();
@@ -350,7 +334,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 }
 
 
-
+	
 	public void reloadSettings(int sensorDelay, float gyroscopeXOffset, float gyroscopeYOffset, float gyroscopeZOffset, short orientationSource, float filterCoefficient) {
 		this.sensorDelay=sensorDelay;
 		this.orientationFusion.reloadSettings(gyroscopeXOffset,gyroscopeYOffset,gyroscopeZOffset,orientationSource,filterCoefficient);

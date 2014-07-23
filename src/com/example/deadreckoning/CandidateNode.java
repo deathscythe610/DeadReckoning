@@ -1,6 +1,7 @@
 package com.example.deadreckoning;
 
 import android.location.Location;
+import android.util.Log;
 
 
 
@@ -15,7 +16,7 @@ public class CandidateNode {
 	
 	float distancetoDRestimate;
 	
-	double observationProbability;
+	double observationProbability = 0.0;
 	
 	Double transmissionProbabilities = 0.0;
 	//The spatial analysis function results (in regard to one or more previously obtained candidate nodes) are saved here
@@ -111,7 +112,11 @@ public class CandidateNode {
 		this.observationProbability = probability;
 	}
 	
-	public void setTransmissionProbability(CandidateNode pastCandidate, Double transmissionProbability){
+	public void setTransmissionProbability(Double transmissionProbability){
+		if (this.observationProbability==0){
+			Log.e("DEBUG","Error at finding oservation prob");
+			this.spatialAnalysisFunctionResults = 0.0;
+		}
 		this.transmissionProbabilities = transmissionProbability;
 		this.spatialAnalysisFunctionResults = transmissionProbability*observationProbability;
 	}

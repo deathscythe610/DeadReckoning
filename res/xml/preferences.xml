@@ -45,7 +45,7 @@
         
         <CheckBoxPreference
           android:title="Global logging"
-          android:defaultValue="false"
+          android:defaultValue="true"
           android:summary="Turns logging on or off globally"
           android:key="globalLogging" />
         

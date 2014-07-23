@@ -46,7 +46,6 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -64,6 +63,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
     private long steptime = 0;
     
     private PointF mapPoint = new PointF(0,0);
+    private PointF estimatedDRPoint = new PointF(0,0);
     private float orientation = 0;
     private float distance = 0;
     
@@ -87,6 +87,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	public static MapFragment instance;
     private Timer mapTimer;
     private boolean requireupdate = false;
+    private boolean MapFixChange = false;
     
 //*****************************************************************************************************************************
 //   												MAP INITIALIZATION   
@@ -208,7 +209,8 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 		super.onResume();
 		this.createUiMap();
 		mapTimer = new Timer();
-		mapTimer.scheduleAtFixedRate(new updateCalculationTask(), 0, 100);
+		mapTimer.scheduleAtFixedRate(new FetchMapDataTask(), 0, 3000);
+		mapTimer.scheduleAtFixedRate(new updateCalculationTask(), 25, 100);
 		mapTimer.scheduleAtFixedRate(new updateUITask(), 50, MainActivity.uiUpdateRate);	
 	}
 	
@@ -313,8 +315,6 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 		});
 	}
 	
-
-	
 //*****************************************************************************************************************************
 //													MAP UPDATE   
 //*****************************************************************************************************************************	
@@ -323,7 +323,6 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
     	//update only when map has been set up and step number change
 		@Override
 		public void run() {
-			Log.d("Map_Task", "running updateCalculationTask_Map");
 			if ((MapFragment.getInstance().mMap!=null) && (SensorFragment.getInstance()!=null) && (DRFragment.getInstance()!=null)){
 	    		MapFragment.getInstance().orientation = SensorFragment.getInstance().orientationFusion.getFusedZOrientation()+ MapFragment.getInstance().curMap.getRotationRadians();
 	    		MapFragment.getInstance().distance = DRFragment.getInstance().getDistance();
@@ -333,9 +332,14 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 					updateCoodinate(distance, orientation);
 					//MapFix called if map fix option is enabled
 					if (MainActivity.mapLocationFixing){
-						MapFragment.getInstance().mapPoint = MapFix(MapFragment.getInstance().mapPoint, orientation,MapFragment.getInstance().steptime);
+						PointF tempMapFix = MapFix(MapFragment.getInstance().mapPoint, orientation,MapFragment.getInstance().steptime);
+						if (MapFragment.getInstance().mapPoint!=tempMapFix){
+							MapFragment.getInstance().mapPoint = tempMapFix;
+							MapFragment.getInstance().MapFixChange = true;
+						}
 					}
 					MapFragment.getInstance().requireupdate=true;
+					MapFragment.getInstance().mapLog();
 	    		}
 	    	}
 		}
@@ -359,6 +363,8 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 		if ((!Double.isNaN(newLat)) && (!Double.isNaN(newLon))){
 			mapPoint.x = (float) Math.toDegrees(newLat);
 			mapPoint.y = (float) Math.toDegrees(newLon);
+			//remember result in EstimatedDRPoint for purpose of logging
+			this.estimatedDRPoint = this.mapPoint;
 		}
 	}
 
@@ -405,7 +411,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 		public void run() {
 			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable(){
 				public void run() {
-					Log.d("Map_UI", "running updateUITask_Map");
+					//Log.d("Map_UI", "running updateUITask_Map");
 					//update only when map has been set up and step number change
 			    	if (MapFragment.getInstance().mMap!=null){
 			    		marker.setRotation((float)Math.toDegrees(MapFragment.getInstance().orientation));
@@ -465,6 +471,12 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	        }
 	}
 	
+	 class FetchMapDataTask extends TimerTask {
+	    	public void run() {
+	    		new FetchSQL().execute();
+	    	}
+	    }
+	
 	
 
 //*****************************************************************************************************************************
@@ -478,6 +490,19 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 		return location;
 	}
 	
+	public void mapLog(){
+		Long TimeStamp = this.steptime;
+		Float DREstimateLat = this.estimatedDRPoint.x;
+		Float DREstimateLon = this.estimatedDRPoint.y;
+		Float MapFixLat = this.mapPoint.x;
+		Float MapFixLon = this.mapPoint.y;
+		String line = TimeStamp + "," + DREstimateLat + "," + DREstimateLon + "," + MainActivity.mapLocationFixing +
+						"," + this.MapFixChange + "," + MapFixLat + "," + MapFixLon;
+		DataLogManager.addLine("mapPath", line);
+		//Return MapFixChange to false for next point checking
+		this.MapFixChange = false;
+	}
+	
 	
 	private float getLat(){
 		return this.mapPoint.x;
@@ -486,12 +511,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	private float getLon(){
 		return this.mapPoint.y;
 	}
-	/*
-	public View getView(){
-		return this.layout;
-	}
 	
-`*/
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
