@@ -32,6 +32,7 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:clearTaskOnLaunch="true"
+            android:noHistory="false"
              >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity android:name="Preferences"></activity>
-        <activity android:name="Change_psql_setting"></activity>
+        <activity android:name="SQLSettingsActivity"></activity>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

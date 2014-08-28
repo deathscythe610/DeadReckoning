@@ -1,7 +1,7 @@
 package com.example.deadreckoning;
 
-import java.util.ArrayList;
 import android.location.Location;
+import android.util.Log;
 
 
 
@@ -14,9 +14,9 @@ public class CandidateNode {
 	long timestamp;
 	boolean startCandidate = false, endCandidate = false, connected = false, bestMatch = false;
 	
-	float distancetoDRestimate;
+	Double distancetoDRestimate;
 	
-	double observationProbability;
+	double observationProbability = 0.0;
 	
 	Double transmissionProbabilities = 0.0;
 	//The spatial analysis function results (in regard to one or more previously obtained candidate nodes) are saved here
@@ -41,7 +41,7 @@ public class CandidateNode {
 	public void updateNodeInfo(Location DRestimation, long timestamp){
 		this.DRestimation = DRestimation;
 		this.timestamp = timestamp;
-		this.distancetoDRestimate = this.nodeLocation.distanceTo(DRestimation);
+		this.distancetoDRestimate = (double) this.nodeLocation.distanceTo(DRestimation);
 	}
 	public boolean equals(CandidateNode NodeToCompare){
 		if(this.nodeLatitude == NodeToCompare.getLatitude())
@@ -69,7 +69,7 @@ public class CandidateNode {
 	}
 	
 	
-	public float getDistanceToDR(){
+	public Double getDistanceToDR(){
 		return this.distancetoDRestimate;
 	}
 	
@@ -112,7 +112,11 @@ public class CandidateNode {
 		this.observationProbability = probability;
 	}
 	
-	public void setTransmissionProbability(CandidateNode pastCandidate, Double transmissionProbability){
+	public void setTransmissionProbability(Double transmissionProbability){
+		if (this.observationProbability==0){
+			Log.e("DEBUG","Error at finding oservation prob");
+			this.spatialAnalysisFunctionResults = 0.0;
+		}
 		this.transmissionProbabilities = transmissionProbability;
 		this.spatialAnalysisFunctionResults = transmissionProbability*observationProbability;
 	}
