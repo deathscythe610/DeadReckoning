@@ -62,10 +62,10 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
     private int steps = 0;
     private long steptime = 0;
     
-    private PointF mapPoint = new PointF(0,0);
-    private PointF estimatedDRPoint = new PointF(0,0);
-    private float orientation = 0;
-    private float distance = 0;
+    private Location mapPoint = new Location("mappoint");
+    private Location estimatedDRPoint = new Location("estimatedDRPoint");
+    private double orientation = 0;
+    private double distance = 0;
     
     
     protected GoogleMap mMap;
@@ -79,7 +79,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
     private List<Marker> markerList;
     private Marker marker;
     private HashMap<String,Map> mapList = new HashMap<String,Map>();
-    private PointF defaultStartPoint = new PointF(1.292214f, 103.776072f);
+    private Location defaultStartPoint = new Location("deaultStartPoint");
     private static boolean moveCamera = true;
 	private int mCurrentPage;
 	private String pageTitle;
@@ -94,6 +94,8 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 //*****************************************************************************************************************************
 	public MapFragment(){
     	super();
+    	this.defaultStartPoint.setLatitude(1.292214);
+    	this.defaultStartPoint.setLongitude(103.776072);
     	this.loadMaps();
     }
 	
@@ -237,8 +239,8 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	            setUpMap();
 	            populateMapStartPointsSpinner(layout);
 	            setStartPointSpinnerListener(layout);
-	            this.setUpMarker(this.defaultStartPoint.x, this.defaultStartPoint.y);
-	            FetchSQL.setDRFixData(this.setLocation(defaultStartPoint));
+	            this.setUpMarker(this.defaultStartPoint.getLatitude(), this.defaultStartPoint.getLongitude());
+	            FetchSQL.setDRFixData(defaultStartPoint);
 	         }
 		}
 	}
@@ -259,9 +261,9 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 
  // Set up a starting point marker at the beginning of the program and when spinner item is selected 
 
-    private void setUpMarker(float Lat, float Lon){
-    	this.mapPoint.x = Lat;
-    	this.mapPoint.y = Lon;
+    private void setUpMarker(double Lat, double Lon){
+    	this.mapPoint.setLatitude(Lat);
+    	this.mapPoint.setLongitude(Lon);
     	LatLng Position = new LatLng(Lat, Lon);
         marker = mMap.addMarker(new MarkerOptions()
 		.position(Position).title("Marker")
@@ -323,6 +325,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
     	//update only when map has been set up and step number change
 		@Override
 		public void run() {
+			//Log.d("DEBUG", "UPDATE CALCULATION");
 			if ((MapFragment.getInstance().mMap!=null) && (SensorFragment.getInstance()!=null) && (DRFragment.getInstance()!=null)){
 	    		MapFragment.getInstance().orientation = SensorFragment.getInstance().orientationFusion.getFusedZOrientation()+ MapFragment.getInstance().curMap.getRotationRadians();
 	    		MapFragment.getInstance().distance = DRFragment.getInstance().getDistance();
@@ -332,8 +335,8 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 					updateCoodinate(distance, orientation);
 					//MapFix called if map fix option is enabled
 					if (MainActivity.mapLocationFixing){
-						PointF tempMapFix = MapFix(MapFragment.getInstance().mapPoint, orientation,MapFragment.getInstance().steptime);
-						if (MapFragment.getInstance().mapPoint!=tempMapFix){
+						Location tempMapFix = MapFix(MapFragment.getInstance().mapPoint, orientation,MapFragment.getInstance().steptime);
+						if ((MapFragment.getInstance().mapPoint.getLatitude()!=tempMapFix.getLatitude() || MapFragment.getInstance().mapPoint.getLongitude()!=tempMapFix.getLongitude())){
 							MapFragment.getInstance().mapPoint = tempMapFix;
 							MapFragment.getInstance().MapFixChange = true;
 						}
@@ -345,24 +348,24 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 		}
 	}
     
-	public void updateCoodinate(float distance, float orientation){
+	public void updateCoodinate(double distance, double orientation){
 		double newLat,newLon;
-		if ((mapPoint.x==0) && (mapPoint.y==0)){
+		if ((mapPoint.getLatitude()==0) && (mapPoint.getLongitude()==0)){
 			newLat = this.curMap.getStartLat();
 			newLon = this.curMap.getStartLon();
 		}
 		else
 		{
-			double orgLat = Math.toRadians(mapPoint.x);
-			double orgLon = Math.toRadians(mapPoint.y);
+			double orgLat = Math.toRadians(mapPoint.getLatitude());
+			double orgLon = Math.toRadians(mapPoint.getLongitude());
 			newLat = Math.asin(Math.sin(orgLat)*Math.cos(distance/this.EarthRadius) +
 										Math.cos(orgLat)*Math.sin(distance/this.EarthRadius)*Math.cos(orientation));
 			newLon = orgLon + Math.atan2(Math.sin(orientation)*Math.sin(distance/this.EarthRadius)*Math.cos(orgLat), 
 														Math.cos(distance/this.EarthRadius)-Math.sin(orgLat)*Math.sin(newLat));
 		}
 		if ((!Double.isNaN(newLat)) && (!Double.isNaN(newLon))){
-			mapPoint.x = (float) Math.toDegrees(newLat);
-			mapPoint.y = (float) Math.toDegrees(newLon);
+			mapPoint.setLatitude(Math.toDegrees(newLat));
+			mapPoint.setLongitude(Math.toDegrees(newLon));
 			//remember result in EstimatedDRPoint for purpose of logging
 			this.estimatedDRPoint = this.mapPoint;
 		}
@@ -372,10 +375,10 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	public Boolean wifiLocationFix(String bssid) {
 		if(this.curMap.hasWifiAP(bssid)) {
 			WiFiAP temp = this.curMap.getWifiAP(bssid);
-			float orgLat = this.getLat();
-			float orgLon = this.getLon();
-			float dLat = orgLat - temp.Lat;
-			float dLon = orgLon - temp.Lon;
+			double orgLat = this.getLat();
+			double orgLon = this.getLon();
+			double dLat = orgLat - temp.Lat;
+			double dLon = orgLon - temp.Lon;
 			double Bx = Math.cos(temp.Lat) * Math.cos(dLon);
 	        double By = Math.cos(temp.Lat) * Math.sin(dLon);
 	        double dist = Math.sin(orgLat) * Math.sin(temp.Lat) + Math.cos(orgLat) * Math.cos(temp.Lat) * Math.cos(dLon);
@@ -383,7 +386,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 				double lat3 = Math.atan2(Math.sin(orgLat)+Math.sin(temp.Lat),Math.sqrt( (Math.cos(orgLat)+Bx)*(Math.cos(orgLat)+Bx) + By*By) );
 		        double lon3 = orgLon + Math.atan2(By, Math.cos(orgLat) + Bx);
 				DRFragment.getInstance().reset();
-				this.curMap.setPosition((float) lat3, (float) lon3);
+				this.curMap.setPosition(lat3, lon3);
 				Misc.toast("wifi location fixed");
 				DataLogManager.addLine("wififix", orgLat+", "+orgLon+", " + this.curMap.getStartLat()+", "+ this.curMap.getStartLon());
 				return true;
@@ -393,16 +396,14 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	}
 	
 	
-	public PointF MapFix(PointF DRestimate, float brearing, long timestamp){
-		Location location = setLocation(DRestimate);
-		FetchSQL.setDRFixData(location);
+	public Location MapFix(Location DRestimate, double brearing, long timestamp){
+		FetchSQL.setDRFixData(DRestimate);
+		Location tempLocation = new Location("dummyprovider");
 		//Only fix map point if node list is loaded
 		if (MapFixing.mapNodesList.size()>0){
-			location = MapFixing.STMatching(location,brearing,timestamp);
+			tempLocation = MapFixing.STMatching(DRestimate,brearing,timestamp);
 		}
-		DRestimate.x = (float) location.getLatitude();
-		DRestimate.y = (float) location.getLongitude();
-		return DRestimate;
+		return tempLocation;
 	}
 	
 
@@ -416,7 +417,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 			    	if (MapFragment.getInstance().mMap!=null){
 			    		marker.setRotation((float)Math.toDegrees(MapFragment.getInstance().orientation));
 						if (MapFragment.getInstance().requireupdate){
-							updateMarker(marker, new LatLng(MapFragment.getInstance().mapPoint.x, MapFragment.getInstance().mapPoint.y), MapFragment.getInstance().orientation, false); 		
+							updateMarker(marker, new LatLng(MapFragment.getInstance().mapPoint.getLatitude(), MapFragment.getInstance().mapPoint.getLongitude()), MapFragment.getInstance().orientation, false); 		
 							if (MapFragment.moveCamera)
 								mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 							MapFragment.getInstance().requireupdate = false;
@@ -427,7 +428,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 		}
     }
  
-	public void updateMarker(final Marker marker, final LatLng toPosition, final float orientation,
+	public void updateMarker(final Marker marker, final LatLng toPosition, final double orientation,
             final boolean hideMarker) {
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -492,10 +493,10 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	
 	public void mapLog(){
 		Long TimeStamp = this.steptime;
-		Float DREstimateLat = this.estimatedDRPoint.x;
-		Float DREstimateLon = this.estimatedDRPoint.y;
-		Float MapFixLat = this.mapPoint.x;
-		Float MapFixLon = this.mapPoint.y;
+		Double DREstimateLat = this.estimatedDRPoint.getLatitude();
+		Double DREstimateLon = this.estimatedDRPoint.getLongitude();
+		Double MapFixLat = this.mapPoint.getLatitude();
+		Double MapFixLon = this.mapPoint.getLongitude();
 		String line = TimeStamp + "," + DREstimateLat + "," + DREstimateLon + "," + MainActivity.mapLocationFixing +
 						"," + this.MapFixChange + "," + MapFixLat + "," + MapFixLon;
 		DataLogManager.addLine("mapPath", line);
@@ -504,12 +505,12 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	}
 	
 	
-	private float getLat(){
-		return this.mapPoint.x;
+	private double getLat(){
+		return this.mapPoint.getLatitude();
 	}
 	
-	private float getLon(){
-		return this.mapPoint.y;
+	private double getLon(){
+		return this.mapPoint.getLongitude();
 	}
 	
 	@Override

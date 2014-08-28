@@ -25,14 +25,15 @@ public class MapFixing {
 	//Mean and standard deviation in meters
 	static double mu = 0.3;
 	static double sigma = 1;
-	static double range = 1;
+	static double range = 0.5;
 	static String debugbearing = "Bearing";
 	
 	
-	public static Location STMatching(Location DRestimation, float orientation, long timestamp){
+	public static Location STMatching(Location DRestimation, double orientation, long timestamp){
 		//Clear relevant node list to load new node list
 		Log.d("Map Fixing", "Map Fixing Process Started");
-		Location Bestmatch = new Location("dummyprovider");
+		Location Bestmatch = new Location("BestMatch");
+		Boolean mapFix = false;
 		MapFixing.relevantNodesList.clear();
 		for(int i=0; i< mapNodesList.size(); i++){
 			boolean doNotAdd = false;
@@ -65,11 +66,17 @@ public class MapFixing {
 					Bestmatch.setLatitude(e.getLatitude());
 					Bestmatch.setLongitude(e.getLongitude());
 					Bestmatch.setTime(e.timestamp);
-					return Bestmatch;
+					mapFix=true;
+					break;
 				}
 			}
 		}
-		return DRestimation;
+		if (!mapFix){
+			Bestmatch.setLatitude(DRestimation.getLatitude());
+			Bestmatch.setLongitude(DRestimation.getLongitude());
+			Bestmatch.setTime(timestamp);
+		}
+		return Bestmatch;
 		//OverlayMapViewer.setCandidatePoints(closeNodesList);
 	}
 	

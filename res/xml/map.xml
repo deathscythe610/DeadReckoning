@@ -5,8 +5,8 @@
         name="i3 2nd floor"
         width="1872"
         height="1460"
-        rotation="-70"
-        orientationOffset="83"
+        rotation="-67"
+        orientationOffset="80"
         inverty="-1"
         default="true">
         	<map_point name="Corridor start" Lat="1.292214" Lon="103.776072" default="true"/>

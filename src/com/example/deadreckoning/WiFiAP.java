@@ -8,10 +8,10 @@ package com.example.deadreckoning;
 
 public class WiFiAP {
 	public String bssid;
-	public float Lat;
-	public float Lon;
+	public double Lat;
+	public double Lon;
 	
-	public WiFiAP(String bssid, float Lat, float Lon) {
+	public WiFiAP(String bssid, double Lat, double Lon) {
 		this.bssid=bssid;
 		this.Lat=Lat;
 		this.Lon=Lon;

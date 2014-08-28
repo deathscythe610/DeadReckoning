@@ -36,11 +36,11 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 		public CharSequence getPageTitle(int position) {
 			switch(position){
 				case 0:
-					return "DR Information";
+					return "DR Info";
 				case 1:
-					return "Map Information";
+					return "Map Info";
 				case 2: 
-					return "Sensor Information";
+					return "Sensor Info";
 				default:
 					return null;
 			}

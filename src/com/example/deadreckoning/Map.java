@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.PointF;
+import android.location.Location;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -24,8 +25,8 @@ public class Map {
 	private int orientationOffset=0; //in degrees
 	public int invertX=1;
 	public int invertY=1;
-	private float Lat=0;
-	private float Lon=0;
+	private double Lat=0;
+	private double Lon=0;
 	
 	public Map() {
 	}
@@ -70,23 +71,23 @@ public class Map {
 	 * 
 	 * @return
 	 */
-	public float getOrientationOffsetRadians() {
-		return this.orientationOffset*3.14f/180f;
+	public double getOrientationOffsetRadians() {
+		return this.orientationOffset*3.14f/180;
 	}
 	
 	/**
 	 * get rotation in radians 
 	 * @return rotation in radians
 	 */
-	public float getRotationRadians() {
-		return this.rotation*3.14f/180f;
+	public double getRotationRadians() {
+		return this.rotation*3.14f/180;
 	}
 	
 	/**
 	 * get rotation in degrees
 	 * @return rotation in degrees
 	 */
-	public float getRotationDegrees() {
+	public double getRotationDegrees() {
 		return this.rotation;
 	}
 	
@@ -105,7 +106,7 @@ public class Map {
 	 * @param label label/name
 	 * @return id of starting point
 	 */
-	public int addMapPoint(float lat, float lon, String label) {
+	public int addMapPoint(double lat, double lon, String label) {
 		int id = this.locations.size();
 		this.locations.put(id ,new MapPoint(lat, lon, label, id));
 		return id;
@@ -144,7 +145,7 @@ public class Map {
 	 * @param lat coordinate
 	 * @param lon coordinate
 	 */
-	public void setPosition(float lat, float lon) {
+	public void setPosition(double lat, double lon) {
 		this.currentLocation=-1;
 		this.currentMapPoint=null;
 		this.Lat=lat;
@@ -155,7 +156,7 @@ public class Map {
 	 * returns the start point x coordinate
 	 * @return 
 	 */
-	public float getStartLat() {
+	public double getStartLat() {
 		return this.Lat;
 	}
 	
@@ -163,7 +164,7 @@ public class Map {
 	 * returns the start point y coordinate
 	 * @return
 	 */
-	public float getStartLon() {
+	public double getStartLon() {
 		return this.Lon;
 	}
 	
@@ -171,8 +172,11 @@ public class Map {
 	 * returns the start point as a PointF object
 	 * @return
 	 */
-	public PointF getStartPoint() {
-		return new PointF(this.getStartLat(), this.getStartLon());
+	public Location getStartPoint() {
+		Location newLoc = new Location("dummyprovider");
+		newLoc.setLatitude(this.getStartLat());
+		newLoc.setLongitude(this.getStartLon());
+		return newLoc;
 	}
 	
 	/**
@@ -208,7 +212,7 @@ public class Map {
 	 * @param lat position on unscaled map
 	 * @param lon position on unscaled map
 	 */
-	public void addWifiAP(String bssid, float Lat, float Lon) {
+	public void addWifiAP(String bssid, double Lat, double Lon) {
 		if(this.verifyBssid(bssid))
 			this.wifiAPs.put(bssid, new WiFiAP(bssid, Lat, Lon));
 	}

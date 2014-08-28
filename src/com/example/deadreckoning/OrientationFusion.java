@@ -233,7 +233,7 @@ public class OrientationFusion {
 		return this.gyroscopeOrientation;
 	}
     
-    public float getGyroscopeZOrientation() {
+    public double getGyroscopeZOrientation() {
 		return this.gyroscopeOrientation[0]+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians();
 	}
     
@@ -241,7 +241,7 @@ public class OrientationFusion {
 		return this.compassOrientation;
 	}
     
-    public float getCompassZOrientation() {
+    public double getCompassZOrientation() {
 		return this.compassOrientation[0]+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians();
 	}
 	
@@ -300,9 +300,9 @@ public class OrientationFusion {
 		this.filterCoefficient=filterCoefficient;
 	}
 	
-	protected float getOrientationDiscrete() {
-		float o = this.getFusedOrientation()[0]+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians();
-		o=(float) (Math.round(o/this.DIRECTION_DIV)*this.DIRECTION_DIV);
+	protected double getOrientationDiscrete() {
+		double o = this.getFusedOrientation()[0]+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians();
+		o= Math.round(o/this.DIRECTION_DIV)*this.DIRECTION_DIV;
 		return o;
 	}
 
@@ -310,7 +310,7 @@ public class OrientationFusion {
 		return this.fusedOrientation;
 	}
 	
-	public float getFusedZOrientation() {
+	public double getFusedZOrientation() {
 		return this.fusedOrientation[0]+ MapFragment.getInstance().getCurMap().getOrientationOffsetRadians();
 	}
 
@@ -337,7 +337,7 @@ public class OrientationFusion {
 		}
 	}
 	
-	public float getOrientation() {
+	public double getOrientation() {
 		switch(this.orientationSource) {
 			case 0:
 				return getCompassZOrientation();

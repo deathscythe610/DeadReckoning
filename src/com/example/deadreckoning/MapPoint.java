@@ -2,29 +2,29 @@ package com.example.deadreckoning;
 
 
 public class MapPoint {
-	public float Lat;
-	public float Lon;
+	public double Lat;
+	public double Lon;
 	public String label;
 	public int id;
 	
-	public MapPoint(float lat, float lon, String label, int id) {
+	public MapPoint(double lat, double lon, String label, int id) {
 		this.Lat=lat;
 		this.Lon=lon;
 		this.label=label;
 		this.id=id;
 	}
 	
-	public MapPoint(float lat, float lon, String label) {
+	public MapPoint(double lat, double lon, String label) {
 		this.Lat=lat;
 		this.Lon=lon;
 		this.label=label;
 	}
 	
-	public float getLat() {
+	public double getLat() {
 		return this.Lat;
 	}
 	
-	public float getLon() {
+	public double getLon() {
 		return this.Lon;
 	}
 	

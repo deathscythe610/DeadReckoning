@@ -174,12 +174,12 @@ public class DRFragment extends FragmentControl{
 	 * @param orientation
 	 * @param triggerTime
 	 */
-	protected void trigger_zhanhy(float az, float ax, float orientation) {
+	protected void trigger_zhanhy(float az, float ax, double orientation) {
 		this.axPush(ax);
 		this.trigger_zhanhy(az, ax, orientation, Misc.getTime());
 	}
 	
-	protected void trigger_zhanhy(float az, float ax, float orientation, long triggerTime){
+	protected void trigger_zhanhy(float az, float ax, double orientation, long triggerTime){
 		if(this.paramEst!=null && this.calibrationLogging) {
 			this.paramEst.recordAcceleration(az);
 		}

@@ -258,9 +258,9 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 				public void run() {
 					//Log.d("Sensor_UI", "running updateUITask_Sensor");
 					valuesMap.put("logInfo", DataLogManager.getInfo());
-					float oFused = SensorFragment.getInstance().orientationFusion.getFusedZOrientation();
-					float oGyro = SensorFragment.getInstance().orientationFusion.getGyroscopeZOrientation();
-			    	float oCompass = SensorFragment.getInstance().orientationFusion.getCompassZOrientation();
+					double oFused = SensorFragment.getInstance().orientationFusion.getFusedZOrientation();
+					double oGyro = SensorFragment.getInstance().orientationFusion.getGyroscopeZOrientation();
+			    	double oCompass = SensorFragment.getInstance().orientationFusion.getCompassZOrientation();
 			    	valuesMap.put("orientationXSensorValue",Misc.roundToDecimals(oCompass*180/3.14,2) + " / "+ Misc.roundToDecimals(oFused*180/3.14,2) + "/" + Misc.roundToDecimals(oGyro*180/3.14,2) + " / " + Misc.roundToDecimals(SensorFragment.getInstance().orientationFusion.getOrientationDiscrete()*180/3.14,2));
 					valuesMap.put("worldAccelerationXSensorValue", SensorFragment.getInstance().worldAccelerationX + "");
 					valuesMap.put("worldAccelerationYSensorValue", SensorFragment.getInstance().worldAccelerationY + "");

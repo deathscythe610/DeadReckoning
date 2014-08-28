@@ -14,7 +14,7 @@ public class CandidateNode {
 	long timestamp;
 	boolean startCandidate = false, endCandidate = false, connected = false, bestMatch = false;
 	
-	float distancetoDRestimate;
+	Double distancetoDRestimate;
 	
 	double observationProbability = 0.0;
 	
@@ -41,7 +41,7 @@ public class CandidateNode {
 	public void updateNodeInfo(Location DRestimation, long timestamp){
 		this.DRestimation = DRestimation;
 		this.timestamp = timestamp;
-		this.distancetoDRestimate = this.nodeLocation.distanceTo(DRestimation);
+		this.distancetoDRestimate = (double) this.nodeLocation.distanceTo(DRestimation);
 	}
 	public boolean equals(CandidateNode NodeToCompare){
 		if(this.nodeLatitude == NodeToCompare.getLatitude())
@@ -69,7 +69,7 @@ public class CandidateNode {
 	}
 	
 	
-	public float getDistanceToDR(){
+	public Double getDistanceToDR(){
 		return this.distancetoDRestimate;
 	}
 	
