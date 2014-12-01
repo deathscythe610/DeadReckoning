@@ -44,11 +44,11 @@ public class DRFragment extends FragmentControl{
 	private boolean IsGoUp = true;
 	private int halfsteps = 0;
 	private long zhanhy_stepDelay = 100;
-	private float zhanhy_thresholdMax = 1f;
-	private float zhanhy_thresholdMin = -0.9f;
-	private float min_dif = 2.5f;
-	private long zhanhy_minstep_delay = 80;
-	private long zhanhy_maxstep_delay = 1500;
+	private float zhanhy_thresholdMax = 2.3f;
+	private float zhanhy_thresholdMin = -2.3f;
+	private float min_dif = 4.6f;
+	private long zhanhy_minstep_delay = 100;
+	private long zhanhy_maxstep_delay = 1480;
 	
 	//define separate variable for X axis filter 
 	private double axHistory[];
@@ -125,7 +125,7 @@ public class DRFragment extends FragmentControl{
 	public void onResume() {
 		super.onResume();
 		deadReckoningTimer = new Timer();
-		deadReckoningTimer.scheduleAtFixedRate(new deadReckoningTask(), 0, 10);
+		deadReckoningTimer.scheduleAtFixedRate(new deadReckoningTask(), 0, MainActivity.MSsensorSamplingRate);
 		deadReckoningTimer.scheduleAtFixedRate(new updateUITask(), 50, MainActivity.uiUpdateRate);
 	}
 	
@@ -166,10 +166,10 @@ public class DRFragment extends FragmentControl{
 	}
 	
 	/** 
-	 * Zhanhy method use a sampling rate of 20 Hz which is much slower than Thomas (100Hz) --> Change to 25Hz 
+	 * Zhang yu method use a sampling rate of 20 Hz which is much slower than Thomas (100Hz) --> Change to 25Hz 
 	 * At peak and valley point, the data tends to go down immediately and do not stay for a long time
 	 * Therefore, aftermax and aftermin state can safely be put away
-	 * Zhanhy method only care if there is any pair of peak and valley but not the order of occurrence    
+	 * Zhang yu method only care if there is any pair of peak and valley but not the order of occurrence    
 	 * @param az
 	 * @param orientation
 	 * @param triggerTime
@@ -296,6 +296,7 @@ public class DRFragment extends FragmentControl{
 		public void run() {
 			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable(){
 				public void run(){
+					
 					//Log.d("DR_UI", "running updateUITask_DR");
 					valuesMap.put("steps", DRFragment.getInstance().steps+"");
 					valuesMap.put("statesLog", DRFragment.getInstance().stateLog);
@@ -313,6 +314,7 @@ public class DRFragment extends FragmentControl{
 			                }
 						 }
 					}
+					
 				}
 			}));
 		}

@@ -54,7 +54,8 @@ public class MainActivity extends FragmentActivity{
 	public static Boolean mapLocationFixing = true;
 	protected WifiManager wifiManager;
 	private BroadcastReceiver broadcastReceiver=null;
-	public static int uiUpdateRate = 500; 
+	public static int uiUpdateRate = 500;
+	public static long MSsensorSamplingRate = 20;
 	public static int startupScreen = 1;
 	public static int currentScreen = 1;
 	private boolean datalogging = false;

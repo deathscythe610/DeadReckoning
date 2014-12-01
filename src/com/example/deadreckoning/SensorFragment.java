@@ -25,7 +25,7 @@ import android.os.Bundle;
 public class SensorFragment extends FragmentControl implements SensorEventListener{
 	private static final String TAG = "Sensor_Fragment";
 	public static SensorFragment instance = null;
-	protected int sensorDelay = SensorManager.SENSOR_DELAY_NORMAL;
+	protected int sensorDelay = (int)(MainActivity.MSsensorSamplingRate*1000);
 	protected SensorManager sensorManager;
 	private Timer logTimer;
 
@@ -45,6 +45,10 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 	public View layout;
 	private int mCurrentPage;
 	private String pageTitle;
+	SensorFilters FilterX, FilterY, FilterZ;
+	
+	//define choice for accelerometer filter: 0-no filter/ 1-Kalman/ 2-moving average/ 3- LPF
+	int choice = 0; 
 
 //*******************************************************************************************************************
 //											FUNCTION INITIALIZATION
@@ -141,6 +145,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 
 	public void init(){
 		registerSensors();
+		if (choice!=0) FilterInit(); 
 	}
 
 
@@ -200,10 +205,16 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		float[] rotationMatrix = this.orientationFusion.getRotationMatrix();
 		if(rotationMatrix!=null && this.linearAccelerometerValues!=null) {
 			double[][] result = MatrixHelper.matrixMultiply(rotationMatrix, 3, 3, linearAccelerometerValues, 3, 1);
-
+			
 			this.worldAccelerationX=result[0][0];
 			this.worldAccelerationY=result[1][0];
-			this.worldAccelerationZ=result[2][0];
+			this.worldAccelerationZ=result[2][0];		
+			
+			double[] filterAcc = this.AcceleromterFilter(result[0][0], result[1][0], result[2][0]);
+			this.worldAccelerationX = filterAcc[0];
+			this.worldAccelerationY = filterAcc[1];
+			this.worldAccelerationZ = filterAcc[2];
+			
 			this.logData();
 		}
 	}
@@ -228,6 +239,14 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 			valuesMap.put("gyroscopeYSensorValue",Misc.roundToDecimals(event.values[1],4)+" / "+Misc.roundToDecimals(temp[1]*180/3.14,2));
 			valuesMap.put("gyroscopeZSensorValue",Misc.roundToDecimals(event.values[2],4)+" / "+Misc.roundToDecimals(temp[2]*180/3.14,2));
 		}
+		if(sensorType==Sensor.TYPE_MAGNETIC_FIELD){
+			magneticFieldValues=event.values.clone();
+			this.orientationFusion.setMagneticField(magneticFieldValues);
+
+			valuesMap.put("magneticFieldXSensorValue",String.valueOf(event.values[0]));
+			valuesMap.put("magneticFieldYSensorValue",String.valueOf(event.values[1]));
+			valuesMap.put("magneticFieldZSensorValue",String.valueOf(event.values[2]));
+		}
 		if(sensorType==Sensor.TYPE_LINEAR_ACCELERATION){  
 			valuesMap.put("linearAccelerationXSensorValue",String.valueOf(event.values[0]));
 			valuesMap.put("linearAccelerationYSensorValue",String.valueOf(event.values[1]));
@@ -236,15 +255,8 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 			this.linearAccelerometerValues[0]=temp[0];
 			this.linearAccelerometerValues[1]=temp[1];
 			this.linearAccelerometerValues[2]=temp[2];
+			
 			this.updateWorldAcceleration();
-		}
-		if(sensorType==Sensor.TYPE_MAGNETIC_FIELD){
-			magneticFieldValues=event.values.clone();
-			this.orientationFusion.setMagneticField(magneticFieldValues);
-
-			valuesMap.put("magneticFieldXSensorValue",String.valueOf(event.values[0]));
-			valuesMap.put("magneticFieldYSensorValue",String.valueOf(event.values[1]));
-			valuesMap.put("magneticFieldZSensorValue",String.valueOf(event.values[2]));
 		}
 	}
 
@@ -256,6 +268,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 		public void run() {
 			MainActivity.getInstance().runOnUiThread(new Thread(new Runnable() {
 				public void run() {
+					
 					//Log.d("Sensor_UI", "running updateUITask_Sensor");
 					valuesMap.put("logInfo", DataLogManager.getInfo());
 					double oFused = SensorFragment.getInstance().orientationFusion.getFusedZOrientation();
@@ -281,6 +294,7 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 			                }
 						 }
 					}
+				
 				}
 			}));
 		}
@@ -290,6 +304,39 @@ public class SensorFragment extends FragmentControl implements SensorEventListen
 //												SUPPORT FUNCTIONS 
 //*******************************************************************************************************************	
 
+	public void FilterInit(){
+		this.FilterX = new SensorFilters();
+		this.FilterY = new SensorFilters();
+		this.FilterZ = new SensorFilters();
+	}
+	public double[] AcceleromterFilter(double AccValX, double AccValY, double AccValZ){
+		double[] FilterVal = new double[3];
+		switch(this.choice){ 
+			case 1: 
+				FilterVal[0] = FilterX.kalman_update(AccValX);
+				FilterVal[1] = FilterY.kalman_update(AccValY);
+				FilterVal[2] = FilterZ.kalman_update(AccValZ);
+				break;
+			case 2: 
+				FilterX.input__movingAvarage_filter(AccValX);
+				FilterY.input__movingAvarage_filter(AccValY);
+				FilterZ.input__movingAvarage_filter(AccValZ);
+				FilterVal[0] = FilterX.movingAvarage_update();
+				FilterVal[1] = FilterY.movingAvarage_update();
+				FilterVal[2] = FilterZ.movingAvarage_update();
+			case 3: 
+				FilterVal[0] = FilterX.LowPassFilter_update(AccValX);
+				FilterVal[1] = FilterY.LowPassFilter_update(AccValY);
+				FilterVal[2] = FilterZ.LowPassFilter_update(AccValZ);
+				break;
+			default: 
+				FilterVal[0] = AccValX;
+				FilterVal[1] = AccValY;
+				FilterVal[2] = AccValZ;
+		}
+		return FilterVal;
+	}
+	
 	public View getLayout(){
 		return SensorFragment.getInstance().layout;
 	}

@@ -14,7 +14,7 @@ import android.util.Log;
 public class DataLog {
 	private static final String TAG = "TM_DataLog";
 	private static final String SEP = ",";
-	private static final int LINE_LIMIT = 49;
+	private static final int LINE_LIMIT = 100;
 	private String data = "";
 	private long lastTime = 0;
 	private int lineCount=0;
@@ -42,7 +42,7 @@ public class DataLog {
 	}
 	
 	public void createFileName() {
-		this.fileName = this.prefix+this.getDateTime()+".txt";
+		this.fileName = this.prefix+this.getDateTime()+".csv";
 		//this.filePath = "Logs/"+this.fileName;
 	}
 	

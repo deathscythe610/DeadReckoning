@@ -1,6 +1,14 @@
 /*
  * THIS IS THE MAP FIXING CLASS WHICH WILL RUN EVERYTIME A DRESTIMATE IS GENERATED
  * USING THE DATABASE INFORMATION TAKEN FROM POSTGRESQL DATABASE
+ * ALGORITHM: 
+ * 1. INPUT new DREsitmation with step distance
+ * 2. Compare DREstimate distance to Trajectories with step distance, bigger distance is left out
+ * 3. Check if the previous estimation is on trajectory, if yes, compare bearing of the step with azimuth of trajectories:
+ * -If StrictFix = true --> left out if difference>30 degree
+ * -If StrictFix = false --> left out if difference>60 degree 
+ * 4. Find point on remaining trajectories with distance to previous estimation = step distance 
+ * 5. If more than 1 points are found, use transmission probability to select best match
  */
 package com.example.deadreckoning;
 
@@ -12,11 +20,11 @@ import android.util.Log;
 
 
 public class MapFixing {
-	
-	public static ArrayList<CandidateNode> mapNodesList = new ArrayList<CandidateNode>();
+	public static ArrayList<Trajectory> trajectoriesList = new ArrayList<Trajectory>();
+	public static ArrayList<Trajectory> relevantTrjectoriesList = new ArrayList<Trajectory>();
 	public static ArrayList<CandidateNode> relevantNodesList = new ArrayList<CandidateNode>();
 	private static String DEBUG = null;
-
+	public static boolean previousFix = false;
 	static CandidateNode previousBestNode;
 	static double lastBearing = 0, newBearing = 0, outlierBearing = 0, bearingDifference = 0;
 	static boolean outlierDetected = false;
@@ -29,32 +37,37 @@ public class MapFixing {
 	static String debugbearing = "Bearing";
 	
 	
-	public static Location STMatching(Location DRestimation, double orientation, long timestamp){
+	public static Location STMatching(Location DRestimation, double orientation, long timestamp, double stepdistance){
 		//Clear relevant node list to load new node list
 		Log.d("Map Fixing", "Map Fixing Process Started");
 		Location Bestmatch = new Location("BestMatch");
-		Boolean mapFix = false;
+		Boolean mapFixed = false;
+		
+		//Clear the relevant node and trajectory list for new input 
 		MapFixing.relevantNodesList.clear();
-		for(int i=0; i< mapNodesList.size(); i++){
+		MapFixing.relevantTrjectoriesList.clear();
+		for(int i=0; i< trajectoriesList.size(); i++){
 			boolean doNotAdd = false;
-			if(mapNodesList.get(i).getDistanceToLocation(DRestimation)>MapFixing.range){
+			
+			Trajectory temp = trajectoriesList.get(i);
+			
+			//Check orientation condition
+			if((temp.getDistancetoPoint(DRestimation)>stepdistance) || (temp.getDistancetoPoint(DRestimation)>DRestimation.distanceTo(temp.getstartPoint())) || (temp.getDistancetoPoint(DRestimation)>DRestimation.distanceTo(temp.getendPoint()))) {
 				doNotAdd = true;
 			}
-			else{
-				for(int j=0; j< mapNodesList.size(); j++){
-					if(mapNodesList.get(i).getSectorName().equals(mapNodesList.get(j).getSectorName()) && mapNodesList.get(i).getDistanceToLocation(DRestimation)>mapNodesList.get(j).getDistanceToLocation(DRestimation)){
-						doNotAdd = true;
-						break;
-					}
+			else if (mapFixed) {
+				float[] results = new float[3];
+				Location.distanceBetween(previousBestNode.nodeLatitude, previousBestNode.nodeLongitude, DRestimation.getLatitude(), DRestimation.getLongitude(), results);
+				doNotAdd = Misc.OrienatationTrack(temp.getAzimuth(), results[2], temp.StrictFix);
 				}
-			}
-			if(!doNotAdd){
-				mapNodesList.get(i).updateNodeInfo(DRestimation, timestamp);
-				relevantNodesList.add(mapNodesList.get(i));
-				Log.d(DEBUG, "New close point: Distance: "+ " Latitude "+mapNodesList.get(i).getLatitude() + " Longitude " + 
-						mapNodesList.get(i).getLongitude() + " Street " + mapNodesList.get(i).getSectorName() + " Way hash: " + mapNodesList.get(i).getDescription().hashCode()); 
-			}
 			
+			if(!doNotAdd){
+				boolean Foward;
+				//if 
+				//relevantTrjectoriesList.get(i).updateTrajectoryInfo(DRestimation, timestamp);
+				//relevantNodesList.add(mapNodesList.get(i));
+			}
+	
 		}
 
 		if(relevantNodesList.size()>0){
@@ -66,12 +79,12 @@ public class MapFixing {
 					Bestmatch.setLatitude(e.getLatitude());
 					Bestmatch.setLongitude(e.getLongitude());
 					Bestmatch.setTime(e.timestamp);
-					mapFix=true;
+					mapFixed=true;
 					break;
 				}
 			}
 		}
-		if (!mapFix){
+		if (!mapFixed){
 			Bestmatch.setLatitude(DRestimation.getLatitude());
 			Bestmatch.setLongitude(DRestimation.getLongitude());
 			Bestmatch.setTime(timestamp);
@@ -197,7 +210,7 @@ public class MapFixing {
 
 	public ArrayList<CandidateNode> returnNodesList(String parameter){
 		if(parameter.equals("close"))
-			return mapNodesList;
+			return relevantNodesList;
 		else return relevantNodesList;
 	}
 }

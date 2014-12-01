@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +44,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -335,7 +333,7 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 					updateCoodinate(distance, orientation);
 					//MapFix called if map fix option is enabled
 					if (MainActivity.mapLocationFixing){
-						Location tempMapFix = MapFix(MapFragment.getInstance().mapPoint, orientation,MapFragment.getInstance().steptime);
+						Location tempMapFix = MapFix(MapFragment.getInstance().mapPoint, orientation,MapFragment.getInstance().steptime, MapFragment.getInstance().distance);
 						if ((MapFragment.getInstance().mapPoint.getLatitude()!=tempMapFix.getLatitude() || MapFragment.getInstance().mapPoint.getLongitude()!=tempMapFix.getLongitude())){
 							MapFragment.getInstance().mapPoint = tempMapFix;
 							MapFragment.getInstance().MapFixChange = true;
@@ -350,22 +348,18 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
     
 	public void updateCoodinate(double distance, double orientation){
 		double newLat,newLon;
+		Location tempLoc = new Location("");	
 		if ((mapPoint.getLatitude()==0) && (mapPoint.getLongitude()==0)){
-			newLat = this.curMap.getStartLat();
-			newLon = this.curMap.getStartLon();
+			tempLoc.setLatitude(this.curMap.getStartLat());
+			tempLoc.setLongitude(this.curMap.getStartLon());
 		}
 		else
 		{
-			double orgLat = Math.toRadians(mapPoint.getLatitude());
-			double orgLon = Math.toRadians(mapPoint.getLongitude());
-			newLat = Math.asin(Math.sin(orgLat)*Math.cos(distance/this.EarthRadius) +
-										Math.cos(orgLat)*Math.sin(distance/this.EarthRadius)*Math.cos(orientation));
-			newLon = orgLon + Math.atan2(Math.sin(orientation)*Math.sin(distance/this.EarthRadius)*Math.cos(orgLat), 
-														Math.cos(distance/this.EarthRadius)-Math.sin(orgLat)*Math.sin(newLat));
+			tempLoc = Misc.findPoint(mapPoint, orientation, distance);
 		}
-		if ((!Double.isNaN(newLat)) && (!Double.isNaN(newLon))){
-			mapPoint.setLatitude(Math.toDegrees(newLat));
-			mapPoint.setLongitude(Math.toDegrees(newLon));
+		if ((!Double.isNaN(tempLoc.getLatitude())) && (!Double.isNaN(tempLoc.getLongitude()))){
+			mapPoint.setLatitude(tempLoc.getLatitude());
+			mapPoint.setLongitude(tempLoc.getLongitude());
 			//remember result in EstimatedDRPoint for purpose of logging
 			this.estimatedDRPoint = this.mapPoint;
 		}
@@ -396,12 +390,12 @@ public class MapFragment extends FragmentControl implements OnSeekBarChangeListe
 	}
 	
 	
-	public Location MapFix(Location DRestimate, double brearing, long timestamp){
+	public Location MapFix(Location DRestimate, double brearing, long timestamp, double distance){
 		FetchSQL.setDRFixData(DRestimate);
 		Location tempLocation = new Location("dummyprovider");
 		//Only fix map point if node list is loaded
-		if (MapFixing.mapNodesList.size()>0){
-			tempLocation = MapFixing.STMatching(DRestimate,brearing,timestamp);
+		if (MapFixing.trajectoriesList.size()>0){
+			tempLocation = MapFixing.STMatching(DRestimate,brearing,timestamp,distance);
 		}
 		return tempLocation;
 	}

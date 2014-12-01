@@ -307,7 +307,7 @@ public class OrientationFusion {
 	}
 
 	public float[] getFusedOrientation() {
-		return this.fusedOrientation;
+		return this.fusedOrientation;				//fused Orientation in Radiant 
 	}
 	
 	public double getFusedZOrientation() {
