@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/deadReckoningScrollLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+
+
+        <TextView
+            android:id="@+id/stepsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Steps: " />
+
+        <TextView
+            android:id="@+id/stepsValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="steps_value" />
+
+
+
+        <TextView
+            android:id="@+id/distanceLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distance:" />
+
+
+
+        <TextView
+            android:id="@+id/distanceValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="distance_value" />
+
+
+        <TextView
+            android:id="@+id/statesLog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="State log" />
+
+    </LinearLayout>
+
+</ScrollView>
